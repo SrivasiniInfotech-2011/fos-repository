@@ -1,0 +1,129 @@
+﻿using Dapper;
+using FOS.Models;
+using FOS.Models.Constants;
+using FOS.Models.Entities;
+using FOS.Repository.Interfaces;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace FOS.Repository.Implementors
+{
+    public class UserRepository : IUserRepository
+    {
+        #region [Private Fields]
+        public readonly string _connectionString = string.Empty;
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        public UserRepository(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+        #endregion
+
+        #region [Interface Methods]
+        /// <summary>
+        /// Validate User Credentials.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>Returns Validation Result</returns>
+        public async Task<bool> ValidateCredentials(string username, string password)
+        {
+            var user = await FindByUsername(username);
+            if (user != null)
+            {
+                return user.Passsword!.Equals(password);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Find User By Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns User By Id</returns>
+        public async Task<User> FindById(string id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection.QueryFirstAsync<User>(SqlCommandConstants.GetUserById, new { UserId = id });
+            }
+        }
+
+
+        /// <summary>
+        /// Find By User Name.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>Returns User By Username</returns>
+        public async Task<User?> FindByUsername(string username)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+
+                var parameters = new DynamicParameters();
+                parameters.Add(SqlParameterConstants.USER_LOGIN_ID, username);
+                parameters.Add(SqlParameterConstants.PASSWORD, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.ERRORCODE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.COMPANYID, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.USER_ID, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.USER_LEVEL_ID, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.LAST_LOGIN_DATE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.USER_THEME, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.USER_NAME, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.COMPANY_NAME, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.COMPANY_CODE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.LEVEL_ACCESS, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.COUNTRY_NAME, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.USER_TYPE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.MARGQUEE_TEXT, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.ADDRESS1, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.ADDRESS2, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.CITY, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.STATE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.ZIP_CODE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.LNC_SERIAL_DATE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.LNC_DATE, direction: ParameterDirection.Output);
+                parameters.Add(SqlParameterConstants.SESSION_ID, direction: ParameterDirection.Output);
+                connection.Open();
+                var data = await connection.ExecuteAsync(SqlCommandConstants.GetUserByUsername, parameters, commandType: CommandType.StoredProcedure);
+                if (data > 0)
+                {
+                    return new User
+                    {
+                        Address1 = parameters.Get<string>(SqlParameterConstants.ADDRESS1),
+                        Address2 = parameters.Get<string>(SqlParameterConstants.ADDRESS2),
+                        City = parameters.Get<string>(SqlParameterConstants.CITY),
+                        State = parameters.Get<string>(SqlParameterConstants.STATE),
+                        Passsword = parameters.Get<string>(SqlParameterConstants.PASSWORD),
+                        CompanyCode = parameters.Get<string>(SqlParameterConstants.COMPANY_CODE),
+                        CompanyName = parameters.Get<string>(SqlParameterConstants.COMPANY_NAME),
+                        CountryName = parameters.Get<string>(SqlParameterConstants.COUNTRY_NAME),
+                        LastLoginDate = parameters.Get<DateTime>(SqlParameterConstants.LAST_LOGIN_DATE),
+                        LevelAccess = parameters.Get<string>(SqlParameterConstants.LEVEL_ACCESS),
+                        LncDate = parameters.Get<DateTime>(SqlParameterConstants.LNC_DATE),
+                        LncSerialDate = parameters.Get<DateTime>(SqlParameterConstants.LNC_SERIAL_DATE),
+                        MarqueeText = parameters.Get<string>(SqlParameterConstants.MARGQUEE_TEXT),
+                        SessionId = parameters.Get<string>(SqlParameterConstants.SESSION_ID),
+                        UserId = parameters.Get<int>(SqlParameterConstants.USER_ID),
+                        UserLevelId = parameters.Get<int>(SqlParameterConstants.USER_LEVEL_ID),
+                        UserLoginId = parameters.Get<string>(SqlParameterConstants.USER_LOGIN_ID),
+                        UserName = parameters.Get<string>(SqlParameterConstants.USER_NAME),
+                        UserTheme = parameters.Get<string>(SqlParameterConstants.USER_THEME),
+                        UserType = parameters.Get<string>(SqlParameterConstants.USER_TYPE),
+                        ZipCode = parameters.Get<string>(SqlParameterConstants.ZIP_CODE)
+                    };
+                }
+            }
+            return null;
+        }
+        #endregion
+    }
+}
