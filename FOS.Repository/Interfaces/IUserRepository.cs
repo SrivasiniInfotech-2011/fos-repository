@@ -26,5 +26,12 @@ namespace FOS.Repository.Interfaces
         /// <param name="username"></param>
         /// <returns>Returns User By Username</returns>
         Task<User?> FindByUsername(string username);
+
+        /// <summary>
+        /// Gets the User Menus.
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Returns List of type <see cref="UserMenu"/></returns>
+        Task<List<UserMenu>> GetUserMenus(int userId);
     }
 }
