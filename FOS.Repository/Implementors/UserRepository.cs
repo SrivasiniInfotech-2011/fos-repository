@@ -5,6 +5,8 @@ using FOS.Models.Entities;
 using FOS.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Intrinsics.Arm;
+using static FOS.Models.Constants.Constants;
 
 namespace FOS.Repository.Implementors
 {
@@ -69,21 +71,21 @@ namespace FOS.Repository.Implementors
             {
 
                 var parameters = new DynamicParameters();
-                parameters.Add(SqlParameterConstants.USER_LOGIN_ID, username,DbType.String,ParameterDirection.Input,20);
-                parameters.Add(SqlParameterConstants.PASSWORD, direction: ParameterDirection.Output,size:100);
+                parameters.Add(SqlParameterConstants.USER_LOGIN_ID, username, DbType.String, ParameterDirection.Input, 20);
+                parameters.Add(SqlParameterConstants.PASSWORD, direction: ParameterDirection.Output, size: 100);
                 parameters.Add(SqlParameterConstants.ERRORCODE, direction: ParameterDirection.Output, dbType: DbType.Int32);
-                parameters.Add(SqlParameterConstants.COMPANYID, direction: ParameterDirection.Output,dbType:DbType.Int32);
+                parameters.Add(SqlParameterConstants.COMPANYID, direction: ParameterDirection.Output, dbType: DbType.Int32);
                 parameters.Add(SqlParameterConstants.USER_ID, direction: ParameterDirection.Output, size: 100, dbType: DbType.Int32);
                 parameters.Add(SqlParameterConstants.USER_LEVEL_ID, direction: ParameterDirection.Output, size: 100, dbType: DbType.Int32);
                 parameters.Add(SqlParameterConstants.LAST_LOGIN_DATE, direction: ParameterDirection.Output, size: 100, dbType: DbType.DateTime);
                 parameters.Add(SqlParameterConstants.USER_THEME, direction: ParameterDirection.Output, size: 50, dbType: DbType.String);
-                parameters.Add(SqlParameterConstants.USER_NAME, direction: ParameterDirection.Output,size: 50, dbType: DbType.String);
+                parameters.Add(SqlParameterConstants.USER_NAME, direction: ParameterDirection.Output, size: 50, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.COMPANY_NAME, direction: ParameterDirection.Output, size: 80, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.COMPANY_CODE, direction: ParameterDirection.Output, size: 3, dbType: DbType.String);
-                parameters.Add(SqlParameterConstants.LEVEL_ACCESS, direction: ParameterDirection.Output,size: 50, dbType: DbType.String);
+                parameters.Add(SqlParameterConstants.LEVEL_ACCESS, direction: ParameterDirection.Output, size: 50, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.COUNTRY_NAME, direction: ParameterDirection.Output, size: 60, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.USER_TYPE, direction: ParameterDirection.Output, size: 60, dbType: DbType.String);
-                parameters.Add(SqlParameterConstants.MARGQUEE_TEXT, direction: ParameterDirection.Output,size: 1000, dbType: DbType.String);
+                parameters.Add(SqlParameterConstants.MARGQUEE_TEXT, direction: ParameterDirection.Output, size: 1000, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.ADDRESS1, direction: ParameterDirection.Output, size: 60, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.ADDRESS2, direction: ParameterDirection.Output, size: 60, dbType: DbType.String);
                 parameters.Add(SqlParameterConstants.CITY, direction: ParameterDirection.Output, size: 30, dbType: DbType.String);
@@ -125,6 +127,42 @@ namespace FOS.Repository.Implementors
             return null;
         }
 
+        /// <summary>
+        /// Gets the User Menus.
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Returns List of type <see cref="UserMenu"/></returns>
+        public async Task<List<UserMenu>> GetUserMenus(int userId)
+        {
+            var userMenus = new List<UserMenu>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var userMenuItems = new List<UserMenuItem>();
+                var parameters = new DynamicParameters();
+                parameters.Add(SqlParameterConstants.USER_ID, userId, DbType.Int32, ParameterDirection.Input);
+                connection.Open();
+                var dataReader = await connection.ExecuteReaderAsync(SqlCommandConstants.GetUserProgramList, parameters, commandType: CommandType.StoredProcedure);
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
+                    {
+                        userMenuItems.Add(new UserMenuItem
+                        {
+                            ModuleName = dataReader.GetString(SqlColumnNames.ModuleName),
+                            ProgramCode = dataReader.GetString(SqlColumnNames.ProgramCode)
+                        });
+                    }
+                }
+                var distinctModules = userMenuItems.Select(s => s.ModuleName).Distinct();
+                foreach (var module in distinctModules)
+                {
+                    var moduleProgramList = userMenuItems.Where(s => s.ModuleName == module).Select(s => s.ProgramCode).ToList();
+                    userMenus.Add(new UserMenu { ModuleName = module, Menus = moduleProgramList });
+                }
+            }
+
+            return userMenus;
+        }
         #endregion
     }
 }
