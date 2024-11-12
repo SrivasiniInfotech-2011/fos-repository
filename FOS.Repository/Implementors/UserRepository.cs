@@ -104,6 +104,7 @@ namespace FOS.Repository.Implementors
                         Address2 = parameters.Get<string?>(SqlParameterConstants.ADDRESS2),
                         City = parameters.Get<string?>(SqlParameterConstants.CITY),
                         State = parameters.Get<string?>(SqlParameterConstants.STATE),
+                        CompanyId = parameters.Get<int?>(SqlParameterConstants.COMPANYID),
                         Passsword = parameters.Get<string?>(SqlParameterConstants.PASSWORD),
                         CompanyCode = parameters.Get<string?>(SqlParameterConstants.COMPANY_CODE),
                         CompanyName = parameters.Get<string?>(SqlParameterConstants.COMPANY_NAME),
