@@ -148,6 +148,19 @@ namespace FOS.Repository.Implementors
         }
 
         /// <summary>
+        /// Get List of States.
+        /// </summary>
+        /// <returns>List of <see cref="Lookup"/></returns>
+        public async Task<List<Lookup>> GetStateLookups()
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.FOS_GET_BRANCH_LIST);
+                return lstLookups.ToList();
+            }
+        }
+
+        /// <summary>
         /// Inserts a Prospect.
         /// </summary>
         /// <param name="companyId">Company Id</param>

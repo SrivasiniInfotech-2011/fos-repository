@@ -8,10 +8,17 @@ namespace FOS.Repository.Interfaces
     public interface IProspectRepository
     {
         /// <summary>
+        /// Get List of States.
+        /// </summary>
+        /// <returns>List of <see cref="Lookup"/></returns>
+        public Task<List<Lookup>> GetStateLookups();
+
+        /// <summary>
         /// Get List of Prospect Lookup.
         /// </summary>
         /// <returns>List of <see cref="Lookup"/></returns>
         public Task<List<Lookup>> GetProspectLookup();
+
         /// <summary>
         /// Get List of Branch Location.
         /// </summary>
