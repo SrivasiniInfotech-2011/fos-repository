@@ -4,6 +4,7 @@ using FOS.Models.Constants;
 using FOS.Models.Entities;
 using FOS.Repository.Interfaces;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using static FOS.Models.Constants.Constants;
 
@@ -47,7 +48,6 @@ namespace FOS.Repository.Implementors
             var prospect = new Prospect();
             using (var connection = new SqlConnection(connectionString))
             {
-
                 var parameters = new DynamicParameters();
                 parameters.Add(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input, 20);
                 parameters.Add(SqlParameterConstants.PROSPECT_USER_ID, userId, DbType.Int32, ParameterDirection.Input, 20);
@@ -56,31 +56,82 @@ namespace FOS.Repository.Implementors
                 parameters.Add(SqlParameterConstants.PROSPECT_PAN_NUMBER, panNumber, DbType.String, ParameterDirection.Input, 30);
                 parameters.Add(SqlParameterConstants.PROSPECT_ID, prospectId, DbType.Int32, ParameterDirection.Input, 20);
                 connection.Open();
-                var dataReader = await connection.ExecuteReaderAsync(SqlCommandConstants.FOS_ORG_GET_EXISTING_PROPSECT_CUSTOMER_DETAILS, parameters, commandType: CommandType.StoredProcedure);
-                if (dataReader.HasRows)
+                var cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = SqlCommandConstants.FOS_ORG_GET_EXISTING_PROPSECT_CUSTOMER_DETAILS;
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_MOBILE_NUMBER, mobileNumber));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_AADHAR_NUMBER, aadharNumber));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_ID, prospectId));
+                var dataAdapter = new SqlDataAdapter(cmd);
+                var ds = new DataSet();
+                dataAdapter.Fill(ds);
+
+                if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
                 {
-                    while (dataReader.Read())
+                    var dr = ds.Tables[0].Rows[0];
+                    prospect = new Prospect
                     {
-                        prospect = new Prospect
+                        ProspectCode = Convert.ToString(dr[SqlColumnNames.ProspectCode]),
+                        ProspectId = Convert.ToInt64(dr[SqlColumnNames.ProspectId]),
+                        ProspectDate = Convert.ToDateTime(dr[SqlColumnNames.ProspectDate]),
+                        LocationId = Convert.ToInt32(dr[SqlColumnNames.LocationId]),
+                        LocationDescription = Convert.ToString(dr[SqlColumnNames.LocationDescription]),
+                        ProspectName = Convert.ToString(dr[SqlColumnNames.ProspectName]),
+                        ProspectTypeId = Convert.ToInt32(dr[SqlColumnNames.ProspectTypeId]),
+                        GenderId = Convert.ToInt32(dr[SqlColumnNames.GenderId]),
+                        GenderName = Convert.ToString(dr[SqlColumnNames.GenderName]),
+                        DateofBirth = Convert.ToDateTime(dr[SqlColumnNames.DateofBirth]),
+                        AlternateMobileNumber = Convert.ToString(dr[SqlColumnNames.AlternateMobileNumber]),
+                        Website = Convert.ToString(dr[SqlColumnNames.Website]),
+                        Email = Convert.ToString(dr[SqlColumnNames.Email])
+                    };
+                }
+
+                if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                {
+                    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
+                    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
+                    if (communicationAddress != null)
+                        prospect.CommunicationAddress = new Address
                         {
-                            ProspectCode = dataReader.GetString(SqlColumnNames.ProspectCode),
-                            ProspectId = dataReader.GetInt64(SqlColumnNames.ProspectId),
-                            ProspectDate = dataReader.GetDateTime(SqlColumnNames.ProspectDate),
-                            LocationId = dataReader.GetInt32(SqlColumnNames.LocationId),
-                            LocationDescription = dataReader.GetString(SqlColumnNames.LocationDescription),
-                            ProspectName = dataReader.GetString(SqlColumnNames.ProspectName),
-                            ProspectTypeId = dataReader.GetInt32(SqlColumnNames.ProspectTypeId),
-                            GenderId = dataReader.GetInt32(SqlColumnNames.GenderId),
-                            GenderName = dataReader.GetString(SqlColumnNames.GenderName),
-                            DateofBirth = dataReader.GetDateTime(SqlColumnNames.DateofBirth),
-                            AlternateMobileNumber = dataReader.GetString(SqlColumnNames.AlternateMobileNumber),
-                            Website = dataReader.GetString(SqlColumnNames.Website),
-                            Email = dataReader.GetString(SqlColumnNames.Email)
+                            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
+                            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
+                            City = Convert.ToString(communicationAddress["City"]),
+                            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
+                            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
+                            Pincode = Convert.ToString(communicationAddress["Pincode"]),
+                            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
                         };
+                    if (permanentAddress != null)
+                        prospect.PermanentAddress = new Address
+                        {
+                            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
+                            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
+                            City = Convert.ToString(permanentAddress["City"]),
+                            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
+                            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
+                            Pincode = Convert.ToString(permanentAddress["Pincode"]),
+                            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
+                        };
+
+
+                    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                    {
+                        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
+                        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
+                        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
+                        if (aadharDocument != null)
+                            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
+                        if (panDocument != null)
+                            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
+                        if (prospectDocument != null)
+                            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
                     }
                 }
+                return prospect;
             }
-            return prospect;
         }
 
         /// <summary>
@@ -164,7 +215,7 @@ namespace FOS.Repository.Implementors
                     parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_CITY, communicationCity, DbType.String, ParameterDirection.Input, 60);
                     parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_STATE_ID, communicationStateId, DbType.Int32, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_COUNTRY_ID, communicationCountryId, DbType.Int32, ParameterDirection.Input);
-                    parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_PINCODE, communicationPinCode, DbType.String, ParameterDirection.Input,20);
+                    parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_PINCODE, communicationPinCode, DbType.String, ParameterDirection.Input, 20);
                     parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_ADDRESS1, permanentAddress1, DbType.String, ParameterDirection.Input, 150);
                     parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_ADDRESS2, permanentAddress2, DbType.String, ParameterDirection.Input, 150);
                     parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_LANDMARK, permanentLandmark, DbType.String, ParameterDirection.Input, 100);
@@ -180,8 +231,8 @@ namespace FOS.Repository.Implementors
                     parameters.Add(SqlParameterConstants.PROSPECT_CREATED_BY, createdBy, DbType.Int32, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.PROSPECT_ID, prospectId, DbType.Int32, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.PROSPECT_CODE, prospectCode, DbType.String, ParameterDirection.Input, 500);
-                    parameters.Add(SqlParameterConstants.PROSPECT_ERROR_CODE,dbType: DbType.Int32,direction: ParameterDirection.Output);
-                    await connection.ExecuteAsync(SqlCommandConstants.FOS_ORG_INSERT_ProspectMaster, parameters, commandType: CommandType.StoredProcedure,transaction:transaction);
+                    parameters.Add(SqlParameterConstants.PROSPECT_ERROR_CODE, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    await connection.ExecuteAsync(SqlCommandConstants.FOS_ORG_INSERT_ProspectMaster, parameters, commandType: CommandType.StoredProcedure, transaction: transaction);
                     transaction.Commit();
                     return true;
                 }
