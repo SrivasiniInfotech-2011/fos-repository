@@ -74,8 +74,8 @@ namespace FOS.Repository.Interfaces
         /// <param name="prospectId">Prospect Id</param>
         /// <param name="prospectCode">Prospect Code.</param>
         /// <param name="errorCode">Error Code</param>
-        /// <returns>Boolean Value Indicating if the record got saved.</returns>
-        public Task<bool> InsertProspectDetails(
+        /// <returns>Integer Value Indicating if the record got saved.</returns>
+        public Task<int> InsertProspectDetails(
                                                 int companyId, int locationId, int prospectTypeId, int customerId, string customerCode, int? genderId,
                                                 string prospectName,DateTime?prospectDate, DateTime? dob, string mobileNumber, string? alternativeMobileNumber, string? email,
                                                 string? website, string communicationAddress1, string communicationAddress2, string communicationLandmark,

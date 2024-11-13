@@ -4,7 +4,6 @@ using FOS.Models.Constants;
 using FOS.Models.Entities;
 using FOS.Repository.Interfaces;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using static FOS.Models.Constants.Constants;
 
@@ -68,66 +67,75 @@ namespace FOS.Repository.Implementors
                 var ds = new DataSet();
                 dataAdapter.Fill(ds);
 
-                if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                if (ds != null)
                 {
-                    var dr = ds.Tables[0].Rows[0];
-                    prospect = new Prospect
+                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
                     {
-                        ProspectCode = Convert.ToString(dr[SqlColumnNames.ProspectCode]),
-                        ProspectId = Convert.ToInt64(dr[SqlColumnNames.ProspectId]),
-                        ProspectDate = Convert.ToDateTime(dr[SqlColumnNames.ProspectDate]),
-                        LocationId = Convert.ToInt32(dr[SqlColumnNames.LocationId]),
-                        LocationDescription = Convert.ToString(dr[SqlColumnNames.LocationDescription]),
-                        ProspectName = Convert.ToString(dr[SqlColumnNames.ProspectName]),
-                        ProspectTypeId = Convert.ToInt32(dr[SqlColumnNames.ProspectTypeId]),
-                        GenderId = Convert.ToInt32(dr[SqlColumnNames.GenderId]),
-                        GenderName = Convert.ToString(dr[SqlColumnNames.GenderName]),
-                        DateofBirth = Convert.ToDateTime(dr[SqlColumnNames.DateofBirth]),
-                        AlternateMobileNumber = Convert.ToString(dr[SqlColumnNames.AlternateMobileNumber]),
-                        Website = Convert.ToString(dr[SqlColumnNames.Website]),
-                        Email = Convert.ToString(dr[SqlColumnNames.Email])
-                    };
-                }
-
-                if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
-                {
-                    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
-                    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
-                    if (communicationAddress != null)
-                        prospect.CommunicationAddress = new Address
+                        var dr = ds.Tables[0].Rows[0];
+                        prospect = new Prospect
                         {
-                            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
-                            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
-                            City = Convert.ToString(communicationAddress["City"]),
-                            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
-                            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
-                            Pincode = Convert.ToString(communicationAddress["Pincode"]),
-                            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
+                            ProspectCode = Convert.ToString(dr[SqlColumnNames.ProspectCode]),
+                            ProspectId = Convert.ToInt64(dr[SqlColumnNames.ProspectId]),
+                            ProspectDate = Convert.ToDateTime(dr[SqlColumnNames.ProspectDate]),
+                            LocationId = Convert.ToInt32(dr[SqlColumnNames.LocationId]),
+                            LocationDescription = Convert.ToString(dr[SqlColumnNames.LocationDescription]),
+                            ProspectName = Convert.ToString(dr[SqlColumnNames.ProspectName]),
+                            ProspectTypeId = Convert.ToInt32(dr[SqlColumnNames.ProspectTypeId]),
+                            GenderId = Convert.ToInt32(dr[SqlColumnNames.GenderId]),
+                            GenderName = Convert.ToString(dr[SqlColumnNames.GenderName]),
+                            DateofBirth = Convert.ToDateTime(dr[SqlColumnNames.DateofBirth]),
+                            AlternateMobileNumber = Convert.ToString(dr[SqlColumnNames.AlternateMobileNumber]),
+                            Website = Convert.ToString(dr[SqlColumnNames.Website]),
+                            Email = Convert.ToString(dr[SqlColumnNames.Email])
                         };
-                    if (permanentAddress != null)
-                        prospect.PermanentAddress = new Address
-                        {
-                            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
-                            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
-                            City = Convert.ToString(permanentAddress["City"]),
-                            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
-                            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
-                            Pincode = Convert.ToString(permanentAddress["Pincode"]),
-                            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
-                        };
+                    }
 
-
-                    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                    if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
                     {
-                        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
-                        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
-                        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
-                        if (aadharDocument != null)
-                            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
-                        if (panDocument != null)
-                            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
-                        if (prospectDocument != null)
-                            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
+                        var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
+                        var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
+                        if (communicationAddress != null)
+                            prospect.CommunicationAddress = new Address
+                            {
+                                AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
+                                AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
+                                City = Convert.ToString(communicationAddress["City"]),
+                                CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
+                                Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
+                                Pincode = Convert.ToString(communicationAddress["Pincode"]),
+                                StateId = Convert.ToInt32(communicationAddress["State_ID"]),
+                            };
+                        if (permanentAddress != null)
+                            prospect.PermanentAddress = new Address
+                            {
+                                AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
+                                AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
+                                City = Convert.ToString(permanentAddress["City"]),
+                                CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
+                                Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
+                                Pincode = Convert.ToString(permanentAddress["Pincode"]),
+                                StateId = Convert.ToInt32(permanentAddress["State_ID"]),
+                            };
+
+
+                        if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                        {
+                            var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
+                            var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
+                            var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
+                            if (aadharDocument != null)
+                            {
+                                prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
+                                prospect.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
+                            }
+                            if (panDocument != null)
+                            {
+                                prospect.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
+                                prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
+                            }
+                            if (prospectDocument != null)
+                                prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
+                        }
                     }
                 }
                 return prospect;
@@ -155,7 +163,7 @@ namespace FOS.Repository.Implementors
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.FOS_GET_BRANCH_LIST);
+                var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.FOS_GET_STATE_LOOKUP);
                 return lstLookups.ToList();
             }
         }
@@ -199,7 +207,7 @@ namespace FOS.Repository.Implementors
         /// <param name="prospectCode">Prospect Code.</param>
         /// <param name="errorCode">Error Code</param>
         /// <returns>Boolean Value Indicating if the record got saved.</returns>
-        public async Task<bool> InsertProspectDetails(int companyId, int locationId, int prospectTypeId, int customerId, string customerCode, int? genderId, string prospectName, DateTime? prospectDate, DateTime? dob, string mobileNumber, string? alternativeMobileNumber, string? email, string? website, string communicationAddress1, string communicationAddress2, string communicationLandmark, string communicationCity, int? communicationStateId, int? communicationCountryId, string communicationPinCode, string permanentAddress1, string permanentAddress2, string permanentLandmark, string permanentCity, int? permanentStateId, int? permanentCountryId, string permanentPinCode, string? aadharNumber, string? aadharImagePath, string panNumber, string panImagePath, string ProspectImagePath, int createdBy, long? prospectId, string prospectCode, int errorCode)
+        public async Task<int> InsertProspectDetails(int companyId, int locationId, int prospectTypeId, int customerId, string customerCode, int? genderId, string prospectName, DateTime? prospectDate, DateTime? dob, string mobileNumber, string? alternativeMobileNumber, string? email, string? website, string communicationAddress1, string communicationAddress2, string communicationLandmark, string communicationCity, int? communicationStateId, int? communicationCountryId, string communicationPinCode, string permanentAddress1, string permanentAddress2, string permanentLandmark, string permanentCity, int? permanentStateId, int? permanentCountryId, string permanentPinCode, string? aadharNumber, string? aadharImagePath, string panNumber, string panImagePath, string ProspectImagePath, int createdBy, long? prospectId, string prospectCode, int errorCode)
         {
             var prospect = new Prospect();
             using (var connection = new SqlConnection(connectionString))
@@ -247,7 +255,7 @@ namespace FOS.Repository.Implementors
                     parameters.Add(SqlParameterConstants.PROSPECT_ERROR_CODE, dbType: DbType.Int32, direction: ParameterDirection.Output);
                     await connection.ExecuteAsync(SqlCommandConstants.FOS_ORG_INSERT_ProspectMaster, parameters, commandType: CommandType.StoredProcedure, transaction: transaction);
                     transaction.Commit();
-                    return true;
+                    return parameters.Get<int?>(SqlParameterConstants.PROSPECT_ERROR_CODE).GetValueOrDefault();
                 }
                 catch (Exception ex)
                 {
