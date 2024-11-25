@@ -67,7 +67,7 @@ namespace FOS.Repository.Implementors
                 var ds = new DataSet();
                 dataAdapter.Fill(ds);
 
-                if (ds != null)
+                if (ds != null && ds.Tables.Count>0)
                 {
                     if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
                     {
