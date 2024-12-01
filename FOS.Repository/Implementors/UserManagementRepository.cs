@@ -33,13 +33,14 @@ namespace FOS.Repository.Implementors
             using (var connection = new SqlConnection(connectionString))
             {
                 //var lstLocations = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup);
-                var lstlookup = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup, new
-                {
-                    CompanyId = companyId,
-                    UserId = userId,
-                    
-                });
-                return lstlookup.ToList();
+                //var lstlookup = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup, new
+                //{
+                //    CompanyId = companyId,
+                //    UserId = userId,
+
+                //});
+                //return lstlookup.ToList();
+                return null;
             }
         }
 
@@ -51,11 +52,12 @@ namespace FOS.Repository.Implementors
         /// <returns>List of <see cref="Lookup"/></returns>
         public async Task<List<Lookup>> GetUserdesignationlevelLookup()
         {
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserDesignationlookup);
-                return lstLookups.ToList();
-            }
+            //using (var connection = new SqlConnection(connectionString))
+            //{
+            //    var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserDesignationlookup);
+            //    return lstLookups.ToList();
+            //}
+            return null;
         }
     }
 }

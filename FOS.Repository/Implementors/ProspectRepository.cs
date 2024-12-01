@@ -352,11 +352,11 @@ namespace FOS.Repository.Implementors
         /// Get List of Prospects for Export.
         /// </summary>
         /// <returns>List of <see cref="ProspectExportData"/></returns>
-        public async Task<List<ProspectExportData>> GetProspectDataForExport()
-        {
-            using var connection = new SqlConnection(connectionString);
-            var lstProspectData = await connection.QueryAsync<ProspectExportData>(SqlCommandConstants.FOS_PROSPECT_EXPORT_QUERY);
-            return lstProspectData.ToList();
-        }
+        //public async Task<List<ProspectExportData>> GetProspectDataForExport()
+        //{
+        //    using var connection = new SqlConnection(connectionString);
+        //    var lstProspectData = await connection.QueryAsync<ProspectExportData>(SqlCommandConstants.FOS_PROSPECT_EXPORT_QUERY);
+        //    return lstProspectData.ToList();
+        //}
     }
 }

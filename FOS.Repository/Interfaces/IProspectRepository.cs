@@ -110,6 +110,6 @@ namespace FOS.Repository.Interfaces
         /// Get List of Prospects for Export.
         /// </summary>
         /// <returns>List of <see cref="ProspectExportData"/></returns>
-        public Task<List<ProspectExportData>> GetProspectDataForExport();
+        //public Task<List<ProspectExportData>> GetProspectDataForExport();
     }
 }
