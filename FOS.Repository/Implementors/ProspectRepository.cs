@@ -38,6 +38,35 @@ namespace FOS.Repository.Implementors
             }
         }
 
+        public IEnumerable<DocumentCategory>? GetDocumentCategories(int companyId, int userId, int option)
+        {
+            IEnumerable<DocumentCategory>? documentCategoryList = null;
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = SqlCommandConstants.FOS_SYSAD_DOCUMENT_LOOKUPDETAILS;
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.OPTION, option));
+            var dataAdapter = new SqlDataAdapter(cmd);
+            var ds = new DataSet();
+            dataAdapter.Fill(ds);
+
+            if (ds != null)
+            {
+                if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    documentCategoryList = ds.Tables[0].Rows.Cast<DataRow>().Select(r => new DocumentCategory
+                    {
+                        DocumentCategoryDescription = Convert.ToString(r["Category_Description"]),
+                        DocumentCategoryId = Convert.ToInt32(r["Document_Category_ID"])
+                    });
+                }
+            }
+            return documentCategoryList;
+        }
+
         /// <summary>
         /// Get the Customer Details for a Prospect.
         /// </summary>
@@ -133,6 +162,67 @@ namespace FOS.Repository.Implementors
                 }
                 return prospect;
             }
+        }
+
+        public IEnumerable<FieldExecutive>? GetFieldExecutives(int companyId, int userId, string prefix)
+        {
+            IEnumerable<FieldExecutive>? fieldExecutiveList = null;
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = SqlCommandConstants.FOS_ORG_GET_USERNAMEAGT;
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PREFIX_TEXT, prefix));
+            var dataAdapter = new SqlDataAdapter(cmd);
+            var ds = new DataSet();
+            dataAdapter.Fill(ds);
+
+            if (ds != null)
+            {
+                if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    fieldExecutiveList = ds.Tables[0].Rows.Cast<DataRow>().Select(r => new FieldExecutive
+                    {
+                        FieldExecutiveName = Convert.ToString(r["UserName"]),
+                        FieldExecutiveId = Convert.ToInt32(r["UserID"])
+                    });
+                }
+            }
+            return fieldExecutiveList;
+        }
+
+        /// <summary>
+        /// Get List of LOB.
+        /// </summary>
+        /// <returns>List of <see cref="LineOfBusiness"/></returns>
+        public IEnumerable<LineOfBusiness>? GetLineofBusiness(int companyId, int userId)
+        {
+            IEnumerable<LineOfBusiness>? lobList = null;
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var cmd = connection.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = SqlCommandConstants.FOS_GET_LOB_LIST;
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+            cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+            var dataAdapter = new SqlDataAdapter(cmd);
+            var ds = new DataSet();
+            dataAdapter.Fill(ds);
+
+            if (ds != null)
+            {
+                if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    lobList = ds.Tables[0].Rows.Cast<DataRow>().Select(r => new LineOfBusiness
+                    {
+                        LineOfBusinessName = Convert.ToString(r["LOB_NAME"]),
+                        LineOfBusinessId = Convert.ToInt32(r["LOB_ID"])
+                    });
+                }
+            }
+            return lobList;
         }
 
         /// <summary>
@@ -256,6 +346,17 @@ namespace FOS.Repository.Implementors
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get List of Prospects for Export.
+        /// </summary>
+        /// <returns>List of <see cref="ProspectExportData"/></returns>
+        public async Task<List<ProspectExportData>> GetProspectDataForExport()
+        {
+            using var connection = new SqlConnection(connectionString);
+            var lstProspectData = await connection.QueryAsync<ProspectExportData>(SqlCommandConstants.FOS_PROSPECT_EXPORT_QUERY);
+            return lstProspectData.ToList();
         }
     }
 }

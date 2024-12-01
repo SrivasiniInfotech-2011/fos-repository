@@ -38,8 +38,8 @@ namespace FOS.Repository.Implementors
                 {
                     assetLookupList = ds.Tables[0].Rows.Cast<DataRow>().Select(r => new Lookup
                     {
-                        LookupTypeDescription = Convert.ToString(r["Asset_Category_Description"]),
-                        LookupValueDescription = Convert.ToString(r["Asset_Category_Type"]),
+                        LookupTypeDescription = Convert.ToString(r["Asset_Category_Type"]),
+                        LookupValueDescription = Convert.ToString(r["Asset_Category_Description"]),
                         LookupValueId = Convert.ToInt32(r["Asset_Category_ID"])
                     });
                 }
@@ -225,16 +225,16 @@ namespace FOS.Repository.Implementors
                         var parameters = new DynamicParameters();
                         parameters.Add(SqlParameterConstants.LEAD_ID, lead.Header.LeadId, DbType.Int32, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.LEAD_GUARANTORTYPE_ID, guarantor.GuarantorTypeLookupValueId, DbType.Int32, ParameterDirection.Input);
-                        parameters.Add(SqlParameterConstants.LEAD_RELATIONSHIP_ID, guarantor.GuarantorRelationshipLookupValueId, DbType.DateTime, ParameterDirection.Input);
-                        parameters.Add(SqlParameterConstants.COMPANYID, lead.CompanyId, DbType.Int32, ParameterDirection.Input);
+                        parameters.Add(SqlParameterConstants.LEAD_RELATIONSHIP_ID, guarantor.GuarantorRelationshipLookupValueId, DbType.Int32, ParameterDirection.Input);
+                        parameters.Add(SqlParameterConstants.PROSPECT_COMPANY_ID, lead.CompanyId, DbType.Int32, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.PROSPECT_LOCATION_ID, lead.LocationId, DbType.Int32, ParameterDirection.Input);
-                        parameters.Add(SqlParameterConstants.PROSPECT_DATE, lead.LeadProspectDetail?.ProspectDate, DbType.DateTime, ParameterDirection.Input);
-                        parameters.Add(SqlParameterConstants.PROSPECT_TYPE_ID, lead.LeadProspectDetail?.ProspectTypeId, DbType.Int32, ParameterDirection.Input);
+                        parameters.Add(SqlParameterConstants.PROSPECT_DATE, lead.Header.LeadDate, DbType.DateTime, ParameterDirection.Input);
+                        parameters.Add(SqlParameterConstants.PROSPECT_TYPE_ID, lead.Header.LeadTypeLookupValueId, DbType.Int32, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.PROSPECT_CUSTOMER_ID, lead.CustomerId, DbType.Int32, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.PROSPECT_CUSTOMER_CODE, lead.CustomerCode, DbType.String, ParameterDirection.Input, 50);
                         parameters.Add(SqlParameterConstants.PROSPECT_GENDER_ID, guarantor.GenderId, DbType.Int32, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.LEAD_GURANTOR_NAME, guarantor.GuarantorName, DbType.String, ParameterDirection.Input, 100);
-                        parameters.Add(SqlParameterConstants.PROSPECT_DATEOFBIRTH, lead.LeadProspectDetail?.ProspectDateOfBirth, DbType.DateTime, ParameterDirection.Input);
+                        parameters.Add(SqlParameterConstants.PROSPECT_DATEOFBIRTH, guarantor?.GuaranterDateOfBirth, DbType.DateTime, ParameterDirection.Input);
                         parameters.Add(SqlParameterConstants.PROSPECT_MOBILE_NUMBER, guarantor.MobileNumber, DbType.String, ParameterDirection.Input, 20);
                         parameters.Add(SqlParameterConstants.PROSPECT_ALTERNATE_MOBILENUMBER, guarantor.AlternateMobileNumber, DbType.String, ParameterDirection.Input, 20);
                         parameters.Add(SqlParameterConstants.PROSPECT_EMAIL, guarantor.Email, DbType.String, ParameterDirection.Input, 40);
@@ -416,7 +416,7 @@ namespace FOS.Repository.Implementors
                     parameters.Add(SqlParameterConstants.LEAD_OWNED_FOUR_WHEELER, leadIndividualDetails.OwnFourWheeler, DbType.Boolean, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.LEAD_OWNED_HEAVY_VEHICLES, leadIndividualDetails.OwnHeavyVehicle, DbType.Boolean, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.LEAD_EXISTING_LOAN_ALIVE, leadIndividualDetails.ExistingLoanCount, DbType.Int32, ParameterDirection.Input);
-                    parameters.Add(SqlParameterConstants.LEAD_EXISITNG_LOANS_MONTHLY_EMI, leadIndividualDetails.ExistingLoanEMI, DbType.Decimal, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.LEAD_EXISITNG_LOANS_MONTHLY_EMI, leadIndividualDetails.ExistingLoanEmi, DbType.Decimal, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.LEAD_SPOUSENAME, leadIndividualDetails.SpouseName, DbType.String, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.PROSPECT_ERROR_CODE, DbType.Int32, direction: ParameterDirection.Output);
                     await connection.ExecuteAsync(SqlCommandConstants.FOS_ORG_INSERT_LEADINDIVIDUALDETAILS, parameters, commandType: CommandType.StoredProcedure, transaction: transaction);
@@ -630,7 +630,7 @@ namespace FOS.Repository.Implementors
                     OwnFourWheeler = Convert.ToInt32(drRow["Owned_FourWheeler"])!,
                     OwnHeavyVehicle = Convert.ToInt32(drRow["Owned_Heavyvehicle"]),
                     ExistingLoanCount = Convert.ToInt32(drRow["Existing_LoanCount"]),
-                    ExistingLoanEMI = Convert.ToDecimal(drRow["Existing_EMI"])
+                    ExistingLoanEmi = Convert.ToDecimal(drRow["Existing_EMI"])
                 };
             }
         }

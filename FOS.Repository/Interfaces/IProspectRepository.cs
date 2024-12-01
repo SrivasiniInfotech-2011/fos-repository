@@ -84,5 +84,32 @@ namespace FOS.Repository.Interfaces
                                                 int? permanentCountryId, string permanentPinCode, string? aadharNumber, string? aadharImagePath, string panNumber,
                                                 string panImagePath, string ProspectImagePath, int createdBy, long? prospectId, string prospectCode, int errorCode
                                                 );
+
+        /// <summary>
+        /// Get List of LOB.
+        /// </summary>
+        /// <returns>List of <see cref="LineOfBusiness"/></returns>
+        public IEnumerable<LineOfBusiness>? GetLineofBusiness(int companyId,int userId);
+
+        /// <summary>
+        /// Get List of LOB.
+        /// </summary>
+        /// <returns>List of <see cref="DocumentCategory"/></returns>
+        public IEnumerable<DocumentCategory>? GetDocumentCategories(int companyId, int userId, int option);
+
+        /// <summary>
+        /// Gets the List of Field Executives.
+        /// </summary>
+        /// <param name="companyId">Company Id.</param>
+        /// <param name="userId">User Id.</param>
+        /// <param name="prefix">Prefix.</param>
+        /// <returns></returns>
+        public IEnumerable<FieldExecutive>? GetFieldExecutives(int companyId,int userId,string prefix);
+
+        /// <summary>
+        /// Get List of Prospects for Export.
+        /// </summary>
+        /// <returns>List of <see cref="ProspectExportData"/></returns>
+        public Task<List<ProspectExportData>> GetProspectDataForExport();
     }
 }
