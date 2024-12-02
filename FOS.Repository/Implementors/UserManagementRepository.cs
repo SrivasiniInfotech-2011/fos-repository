@@ -95,56 +95,57 @@ namespace FOS.Repository.Implementors
         /// <returns>Integer Value Indicating if the record got saved.</returns>
 
 
-        //public async Task<int> InsertUserDetails(int companyId, int User_ID, string UserCode, string UserName, int? genderId,
-        //                                   string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, string Designation,
-        //                                   int UserLevelID, int ReportingNextlevel, int User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
-        //                                  , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
-        //                                   int createdBy, int errorCode)
-        //{
-        //    var prospect = new UserInsertDetails();
-        //    using (var connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        var transaction = connection.BeginTransaction();
-        //        try
-        //        {
-        //            var parameters = new DynamicParameters();
-        //            parameters.Add(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input);;
-        //            parameters.Add(SqlParameterConstants.PROSPECT_CUSTOMER_CODE, UserCode, DbType.String, ParameterDirection.Input, 50);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_CUSTOMER_CODE, Password, DbType.String, ParameterDirection.Input, 50);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_GENDER_ID, genderId, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_NAME, UserName, DbType.String, ParameterDirection.Input, 100);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_DATEOFBIRTH, DOJ, DbType.DateTime, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_DATEOFBIRTH, Dateofbirth, DbType.DateTime, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_MOBILE_NUMBER, mobileNumber, DbType.String, ParameterDirection.Input, 20);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_ALTERNATE_MOBILENUMBER, EmergencycontactNumber, DbType.String, ParameterDirection.Input, 20);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_EMAIL, Designation, DbType.String, ParameterDirection.Input, 40);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_STATE_ID, UserLevelID, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_COMMUNICATION_COUNTRY_ID, ReportingNextlevel, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_STATE_ID, User_Group, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_COUNTRY_ID, Maritial_ID, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_PERMANENT_PINCODE, EmailID, DbType.String, ParameterDirection.Input, 20);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_AADHAR_NUMBER, FatherName, DbType.String, ParameterDirection.Input, 20);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_AADHAR_IMPAGEPATH, MotherName, DbType.String, ParameterDirection.Input, 150);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_PAN_NUMBER, SpouseName, DbType.String, ParameterDirection.Input, 20);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_PAN_IMAGEPATH, Aadhar_Number, DbType.String, ParameterDirection.Input, 150);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_IMAGEPATH, PAN_Number, DbType.String, ParameterDirection.Input, 150);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_IMAGEPATH, User_Imagepath, DbType.String, ParameterDirection.Input, 150);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_CREATED_BY, createdBy, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_ID, Is_Active, DbType.Int32, ParameterDirection.Input);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_CODE, Address, DbType.String, ParameterDirection.Input, 500);
-        //            parameters.Add(SqlParameterConstants.PROSPECT_ERROR_CODE, dbType: DbType.Int32, direction: ParameterDirection.Output);
-        //            await connection.ExecuteAsync(SqlCommandConstants.FOS_SYSAD_Insert_UserDetails, parameters, commandType: CommandType.StoredProcedure, transaction: transaction);
-        //            transaction.Commit();
-        //            return parameters.Get<int?>(SqlParameterConstants.PROSPECT_ERROR_CODE).GetValueOrDefault();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            transaction.Rollback();
-        //            throw;
-        //        }
-        //    }
-        //}
-    
-}
+        public async Task<int> InsertUserDetails(int companyId, int User_ID, string UserCode, string UserName, int? genderId,
+                                           string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, string Designation,
+                                           int UserLevelID, int ReportingNextlevel, int User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
+                                          , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
+                                           int createdBy, int errorCode)
+        {
+            //var prospect = new UserInsertDetails();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                try
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input); 
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_ID, User_ID, DbType.Int32, ParameterDirection.Input); 
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_CODE, UserCode, DbType.String, ParameterDirection.Input, 50);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_PASSWORD, Password, DbType.String, ParameterDirection.Input, 50);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_GENDER_ID, genderId, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_NAME, UserName, DbType.String, ParameterDirection.Input, 100);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DOJ, DOJ, DbType.DateTime, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DATEOFBIRTH, Dateofbirth, DbType.DateTime, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_MOBILE_NUMBER, mobileNumber, DbType.String, ParameterDirection.Input, 20);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_EMERGENCY_CONTACT_NUMBER, EmergencycontactNumber, DbType.String, ParameterDirection.Input, 20);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DESIGNATION, Designation, DbType.String, ParameterDirection.Input, 40);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_LEVEL_ID, UserLevelID, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_REPORTING_NEXT_LEVEL, ReportingNextlevel, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_GROUP, User_Group, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_MARITIAL_ID, Maritial_ID, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_EMAIL_ID, EmailID, DbType.String, ParameterDirection.Input, 20);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_FATHER_NAME, FatherName, DbType.String, ParameterDirection.Input, 20);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_MOTHER_NAME, MotherName, DbType.String, ParameterDirection.Input, 150);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_SPOUSE_NAME, SpouseName, DbType.String, ParameterDirection.Input, 20);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_AADHAR_NUMBER, Aadhar_Number, DbType.String, ParameterDirection.Input, 150);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_PAN_NUMBER, PAN_Number, DbType.String, ParameterDirection.Input, 150);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_IMAGE_PATH, User_Imagepath, DbType.String, ParameterDirection.Input, 150);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_CREATED_BY, createdBy, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_IS_ACTIVE, Is_Active, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_Address, Address, DbType.String, ParameterDirection.Input, 500);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_ERROR_CODE, dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    await connection.ExecuteAsync(SqlCommandConstants.FOS_SYSAD_Insert_UserDetails, parameters, commandType: CommandType.StoredProcedure, transaction: transaction);
+                    transaction.Commit();
+                    return parameters.Get<int?>(SqlParameterConstants.USER_MANAGEMENT_ERROR_CODE).GetValueOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+    }
 }
