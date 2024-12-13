@@ -3,8 +3,10 @@ using FOS.Models;
 using FOS.Models.Constants;
 using FOS.Models.Entities;
 using FOS.Repository.Interfaces;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Data.SqlClient;
+using static FOS.Models.Constants.Constants;
 
 namespace FOS.Repository.Implementors
 {
@@ -104,7 +106,7 @@ namespace FOS.Repository.Implementors
                     lead.Guarantors = new List<LeadGuarantor>();
                     ds.Tables[5].Rows.Cast<DataRow>().ToList().ForEach((drRow) =>
                     {
-                        AddLeadGuaranter(lead.Guarantors, drRow);
+                        lead.Guarantors.Add(AddLeadGuaranter(companyId, userId, drRow));
                     });
                 }
             }
@@ -542,6 +544,9 @@ namespace FOS.Repository.Implementors
                         LeadId = Convert.ToInt32(dr["Lead_ID"]),
                         LeadNumber = Convert.ToString(dr["Lead_Number"])!,
                         LeadDate = Convert.ToDateTime(dr["Lead_Date"])!,
+                        VehicleRegistrationNumber = Convert.ToString(dr["Vehicle_Number"])!,
+                        LeadTypeLookupValueId = Convert.ToInt32(dr["Lead_Type"])!,
+                        ProspectId = Convert.ToInt32(dr["Prospect_ID"]),
                     },
                     LeadProspectDetail = new LeadProspectDetail
                     {
@@ -712,19 +717,100 @@ namespace FOS.Repository.Implementors
         /// </summary>
         /// <param name="guarantors">Guarantors object from the Lead object.</param>
         /// <param name="drRow">Data Row containing the Lead Guarantor Details.</param>
-        private void AddLeadGuaranter(List<LeadGuarantor>? guarantors, DataRow drRow)
+        private LeadGuarantor AddLeadGuaranter(int companyId, int userId, DataRow drRow)
         {
-            if (drRow != null && guarantors != null)
+            var guarantor = new LeadGuarantor();
+            if (drRow != null)
             {
-                guarantors.Add(new LeadGuarantor
+
+                guarantor.GuarantorTypeLookupValueId = Convert.ToInt32(drRow["GuarantorType_ID"]);
+                guarantor.GuarantorTypeDescription = Convert.ToString(drRow["GuarantorType_Description"]);
+                guarantor.GuarantorAmount = Convert.ToDecimal(drRow["Guarantor_Amount"]);
+                guarantor.GuarantorRelationshipLookupValueId = Convert.ToInt32(drRow["GuarantorRelationship_ID"]);
+                guarantor.GuarantorRelationshipDescription = Convert.ToString(drRow["GuarantorRelationship_Description"]);
+                guarantor.ProspectId = Convert.ToInt32(drRow["Guarantor_ID"]);
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    GuarantorTypeLookupValueId = Convert.ToInt32(drRow["GuarantorType_ID"]),
-                    GuarantorTypeDescription = Convert.ToString(drRow["GuarantorType_Description"]),
-                    GuarantorAmount = Convert.ToDecimal(drRow["Guarantor_Amount"]),
-                    GuarantorRelationshipLookupValueId = Convert.ToInt32(drRow["GuarantorRelationship_ID"]),
-                    GuarantorRelationshipDescription = Convert.ToString(drRow["GuarantorRelationship_Description"]),
-                });
+                    connection.Open();
+                    var cmd = connection.CreateCommand();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = SqlCommandConstants.FOS_ORG_GET_EXISTING_PROPSECT_CUSTOMER_DETAILS;
+                    cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+                    cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+                    cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_ID, guarantor.ProspectId));
+                    var dataAdapter = new SqlDataAdapter(cmd);
+                    var ds = new DataSet();
+                    dataAdapter.Fill(ds);
+
+                    if (ds != null && ds.Tables.Count > 0)
+                    {
+                        if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                        {
+                            var dr = ds.Tables[0].Rows[0];
+
+                            guarantor.ProspectCode = Convert.ToString(dr[SqlColumnNames.ProspectCode]);
+                            guarantor.GuarantorName = Convert.ToString(dr[SqlColumnNames.ProspectName]);
+                            guarantor.GenderId = Convert.ToInt32(dr[SqlColumnNames.GenderId]);
+                            guarantor.GuaranterDateOfBirth = Convert.ToDateTime(dr[SqlColumnNames.DateofBirth]);
+                            guarantor.MobileNumber=Convert.ToString(dr[SqlColumnNames.MobileNumber]);
+                            guarantor.AlternateMobileNumber = Convert.ToString(dr[SqlColumnNames.AlternateMobileNumber]);
+                            guarantor.Website = Convert.ToString(dr[SqlColumnNames.Website]);
+                            guarantor.Email = Convert.ToString(dr[SqlColumnNames.Email]);
+
+                        }
+
+                        if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                        {
+                            var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
+                            var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
+                            if (communicationAddress != null)
+                                guarantor.CommunicationAddress = new Address
+                                {
+                                    AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
+                                    AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
+                                    City = Convert.ToString(communicationAddress["City"]),
+                                    CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
+                                    Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
+                                    Pincode = Convert.ToString(communicationAddress["Pincode"]),
+                                    StateId = Convert.ToInt32(communicationAddress["State_ID"]),
+                                };
+                            if (permanentAddress != null)
+                                guarantor.PermanentAddress = new Address
+                                {
+                                    AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
+                                    AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
+                                    City = Convert.ToString(permanentAddress["City"]),
+                                    CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
+                                    Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
+                                    Pincode = Convert.ToString(permanentAddress["Pincode"]),
+                                    StateId = Convert.ToInt32(permanentAddress["State_ID"]),
+                                };
+
+
+                            if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                            {
+                                var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
+                                var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
+                                var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
+                                if (aadharDocument != null)
+                                {
+                                    guarantor.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
+                                    guarantor.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
+                                }
+                                if (panDocument != null)
+                                {
+                                    guarantor.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
+                                    guarantor.PanImagePath = Convert.ToString(panDocument["Upload_Path"]);
+                                }
+                                if (prospectDocument != null)
+                                    guarantor.GuarantorImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
+                            }
+                        }
+
+                    }
+                }
             }
+            return guarantor;
         }
     }
 }
