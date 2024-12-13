@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FOS.Models.Constants.Constants;
 
 namespace FOS.Repository.Implementors
 {
@@ -33,14 +34,21 @@ namespace FOS.Repository.Implementors
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                //var lstLocations = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup);
-                var lstlookup = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup, new
+
+                try
                 {
-                    CompanyId = companyId,
-                    UserId = userId,
-                    
-                });
-                return lstlookup.ToList();
+                    //var lstLocations = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup);
+                    var lstlookup = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserLevellookup, new
+                    {
+                        CompanyId = companyId,
+                        UserId = userId,
+
+                    });
+                    return lstlookup.ToList();
+                }
+                catch ( Exception ex) { throw; }
+                
+                
             }
         }
 
@@ -48,19 +56,246 @@ namespace FOS.Repository.Implementors
 
         /// <summary>
         /// Get List of Userdesignationlevel Lookupp.
+        /// <param name="companyId">Company Id</param>
         /// </summary>
         /// <returns>List of <see cref="Lookup"/></returns>
-        public async Task<List<Lookup>> GetUserdesignationlevelLookup()
+        public async Task<List<Lookup>> GetUserdesignationlevelLookup(int? companyId)
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserDesignationlookup);
+                try
+                {
+                    var lstLookups = await connection.QueryAsync<Lookup>(SqlCommandConstants.GetUserDesignationlookup, new
+                {
+                    CompanyId = companyId,
+                });
                 return lstLookups.ToList();
+                }
+                catch (Exception ex) { throw; }
             }
         }
 
 
 
+        /// <summary>
+        /// Get the User Details.
+        /// </summary>
+        /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
+      
+        public async Task<InsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId)
+        {
+            var userdetails = new InsertUserDetailsModel();
+            using (var connection = new SqlConnection(connectionString))
+            {
+
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = SqlCommandConstants.FOS_SYSAD_GET_UserViewDetails;
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+            
+                var dataAdapter = new SqlDataAdapter(cmd);
+                var ds = new DataSet();
+                dataAdapter.Fill(ds);
+
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                    {
+
+                        try
+                        {
+                            var dr = ds.Tables[0].Rows[0];
+                            userdetails = new InsertUserDetailsModel
+
+
+
+                            {
+                                //UserID = Convert.ToString(dr[SqlColumnNames.User_ID]),
+                                //UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+                                UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
+                                GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
+                                //GenderName = Convert.ToInt32(dr[SqlColumnNames.GenderName]),
+                                //Password = Convert.ToString(dr[SqlColumnNames.Password]),
+                                DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
+                                MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
+                                EmergencycontactNumber = Convert.ToString(dr[SqlColumnNames.EmergencycontactNumber]),
+                                Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
+                                UserLevelID = Convert.ToInt32(dr[SqlColumnNames.UserLevelID]),
+                                ReportingNextlevel = Convert.ToInt32(dr[SqlColumnNames.ReportingNextlevel]),
+                                
+                                EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
+                                Dateofbirth = Convert.ToDateTime(dr[SqlColumnNames.DoB]),
+                                FatherName = Convert.ToString(dr[SqlColumnNames.FatherName]),
+                                MotherName = Convert.ToString(dr[SqlColumnNames.MotherName]),
+                                SpouseName = Convert.ToString(dr[SqlColumnNames.SpouseName]),
+                                MaritialID = Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
+                                AadharNumber = Convert.ToString(dr[SqlColumnNames.AadharNumber]),
+                                PanNumber = Convert.ToString(dr[SqlColumnNames.PanNumber]),
+                                Address = Convert.ToString(dr[SqlColumnNames.Address]),
+                                UserImagepath = Convert.ToString(dr[SqlColumnNames.UserImagepath])
+
+
+
+                            };
+                        }
+                        catch ( Exception ex)
+                        {
+                            throw;
+                        }
+                    }
+
+                    //if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                    //{
+                    //    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
+                    //    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
+                    //    if (communicationAddress != null)
+                    //        prospect.CommunicationAddress = new Address
+                    //        {
+                    //            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
+                    //            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
+                    //            City = Convert.ToString(communicationAddress["City"]),
+                    //            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
+                    //            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
+                    //            Pincode = Convert.ToString(communicationAddress["Pincode"]),
+                    //            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
+                    //        };
+                    //    if (permanentAddress != null)
+                    //        prospect.PermanentAddress = new Address
+                    //        {
+                    //            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
+                    //            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
+                    //            City = Convert.ToString(permanentAddress["City"]),
+                    //            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
+                    //            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
+                    //            Pincode = Convert.ToString(permanentAddress["Pincode"]),
+                    //            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
+                    //        };
+
+
+                    //    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                    //    {
+                    //        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
+                    //        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
+                    //        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
+                    //        if (aadharDocument != null)
+                    //        {
+                    //            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
+                    //            prospect.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
+                    //        }
+                    //        if (panDocument != null)
+                    //        {
+                    //            prospect.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
+                    //            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
+                    //        }
+                    //        if (prospectDocument != null)
+                    //            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
+                    //    }
+                    //}
+                }
+                return userdetails;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// GetUserTranslander.
+        /// </summary>
+        /// <returns>List of <see cref="GetUserTranslanderModel"/></returns>
+
+        public async Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId)
+        {
+            var userdetails = new GetUserTranslanderModel();
+            using (var connection = new SqlConnection(connectionString))
+            {
+
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = SqlCommandConstants.FOS_Sysad_Get_UserMaster;
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_USER_ID, userId));
+
+                var dataAdapter = new SqlDataAdapter(cmd);
+                var ds = new DataSet();
+                dataAdapter.Fill(ds);
+
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var dr = ds.Tables[0].Rows[0];
+                        userdetails = new GetUserTranslanderModel
+
+                        {
+                            //UserID = Convert.ToInt32(dr[SqlColumnNames.UserID]),
+                            //UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+                            UserName = Convert.ToString(dr[SqlColumnNames.UserName]),                            
+                            MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumberr]),
+                            Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
+                            Userlevel = Convert.ToString(dr[SqlColumnNames.UserLevel]),                           
+                            EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
+                       
+
+
+
+                        };
+                    }
+
+                    //if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                    //{
+                    //    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
+                    //    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
+                    //    if (communicationAddress != null)
+                    //        prospect.CommunicationAddress = new Address
+                    //        {
+                    //            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
+                    //            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
+                    //            City = Convert.ToString(communicationAddress["City"]),
+                    //            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
+                    //            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
+                    //            Pincode = Convert.ToString(communicationAddress["Pincode"]),
+                    //            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
+                    //        };
+                    //    if (permanentAddress != null)
+                    //        prospect.PermanentAddress = new Address
+                    //        {
+                    //            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
+                    //            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
+                    //            City = Convert.ToString(permanentAddress["City"]),
+                    //            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
+                    //            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
+                    //            Pincode = Convert.ToString(permanentAddress["Pincode"]),
+                    //            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
+                    //        };
+
+
+                    //    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                    //    {
+                    //        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
+                    //        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
+                    //        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
+                    //        if (aadharDocument != null)
+                    //        {
+                    //            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
+                    //            prospect.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
+                    //        }
+                    //        if (panDocument != null)
+                    //        {
+                    //            prospect.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
+                    //            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
+                    //        }
+                    //        if (prospectDocument != null)
+                    //            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
+                    //    }
+                    //}
+                }
+                return userdetails;
+            }
+        }
 
 
         /// <summary>
@@ -101,7 +336,7 @@ namespace FOS.Repository.Implementors
                                           , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
                                            int createdBy, int errorCode)
         {
-            //var prospect = new UserInsertDetails();
+            
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();

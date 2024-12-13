@@ -47,13 +47,7 @@ namespace FOS.Repository.Implementors
             var prospect = new Prospect();
             using (var connection = new SqlConnection(connectionString))
             {
-                var parameters = new DynamicParameters();
-                parameters.Add(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input, 20);
-                parameters.Add(SqlParameterConstants.PROSPECT_USER_ID, userId, DbType.Int32, ParameterDirection.Input, 20);
-                parameters.Add(SqlParameterConstants.PROSPECT_MOBILE_NUMBER, mobileNumber, DbType.String, ParameterDirection.Input, 20);
-                parameters.Add(SqlParameterConstants.PROSPECT_AADHAR_NUMBER, aadharNumber, DbType.String, ParameterDirection.Input, 30);
-                parameters.Add(SqlParameterConstants.PROSPECT_PAN_NUMBER, panNumber, DbType.String, ParameterDirection.Input, 30);
-                parameters.Add(SqlParameterConstants.PROSPECT_ID, prospectId, DbType.Int32, ParameterDirection.Input, 20);
+              
                 connection.Open();
                 var cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;

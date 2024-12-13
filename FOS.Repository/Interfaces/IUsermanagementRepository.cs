@@ -26,11 +26,25 @@ namespace FOS.Repository.Interfaces
         /// Get List of Userdesignationlevel Lookup.
         /// </summary>
         /// <returns>List of <see cref="Lookup"/></returns>
-        public Task<List<Lookup>> GetUserdesignationlevelLookup();
+        public Task<List<Lookup>> GetUserdesignationlevelLookup(int? companyId);
 
 
 
-      
+        /// <summary>
+        /// Get the User Details.
+        /// </summary>
+        /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
+        public Task<InsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId);
+
+
+
+        /// <summary>
+        /// GetUserTranslander.
+        /// </summary>
+        /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
+        public Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId);
+
+
 
 
         /// <summary>
