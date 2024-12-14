@@ -76,6 +76,7 @@ namespace FOS.Repository.Implementors
             var prospect = new Prospect();
             using (var connection = new SqlConnection(connectionString))
             {
+              
                 connection.Open();
                 var cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
