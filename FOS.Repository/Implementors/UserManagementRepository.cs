@@ -76,15 +76,39 @@ namespace FOS.Repository.Implementors
         }
 
 
+        /// <summary>
+        /// Get List of Userreportinglevel Lookupp.
+        /// 
+        /// </summary>
+        /// <returns>List of <see cref="ReportingLevel"/></returns>
+        public async Task<List<ReportingLevel>> getUserReportingLevel(int? companyId,int? userId,string? prefixText)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    var lstLookups = await connection.QueryAsync<ReportingLevel>(SqlCommandConstants.FOS_ORG_GET_UserNameAGT, new
+                    {
+                        Company_ID = companyId,
+                        User_ID = userId,
+                        PrefixText = prefixText
+
+                    });
+                    return lstLookups.ToList();
+                }
+                catch (Exception ex) { throw; }
+            }
+        }
+
 
         /// <summary>
         /// Get the User Details.
         /// </summary>
         /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
-      
-        public async Task<InsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId)
+
+        public async Task<GetInsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId)
         {
-            var userdetails = new InsertUserDetailsModel();
+            var userdetails = new GetInsertUserDetailsModel();
             using (var connection = new SqlConnection(connectionString))
             {
 
@@ -107,30 +131,33 @@ namespace FOS.Repository.Implementors
                         try
                         {
                             var dr = ds.Tables[0].Rows[0];
-                            userdetails = new InsertUserDetailsModel
+                            userdetails = new GetInsertUserDetailsModel
 
 
 
                             {
-                                //UserID = Convert.ToString(dr[SqlColumnNames.User_ID]),
-                                //UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+                                UserID = Convert.ToInt16(dr[SqlColumnNames.UserID]),
+                                UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
                                 UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
-                                GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
-                                //GenderName = Convert.ToInt32(dr[SqlColumnNames.GenderName]),
-                                //Password = Convert.ToString(dr[SqlColumnNames.Password]),
+                                //GenderId = Convert.ToString(dr[SqlColumnNames.GenderName]),
+                                GenderName = Convert.ToString(dr[SqlColumnNames.GenderName]),
+                                Password = Convert.ToString(dr[SqlColumnNames.Password]),
                                 DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
                                 MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
                                 EmergencycontactNumber = Convert.ToString(dr[SqlColumnNames.EmergencycontactNumber]),
-                                Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
+                                Designation = Convert.ToInt32(dr[SqlColumnNames.Designationid]),
                                 UserLevelID = Convert.ToInt32(dr[SqlColumnNames.UserLevelID]),
                                 ReportingNextlevel = Convert.ToInt32(dr[SqlColumnNames.ReportingNextlevel]),
-                                
+                                ReportingGHigherLevel = Convert.ToString(dr[SqlColumnNames.REPORTING_HIGHER_LEVEL]),
+                                MarutialStatusDiscription = Convert.ToString(dr[SqlColumnNames.marutialStatusDiscription]),                       
+                                UserLevel = Convert.ToString(dr[SqlColumnNames.UserLevelID]),                                                                                      
                                 EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
                                 Dateofbirth = Convert.ToDateTime(dr[SqlColumnNames.DoB]),
                                 FatherName = Convert.ToString(dr[SqlColumnNames.FatherName]),
                                 MotherName = Convert.ToString(dr[SqlColumnNames.MotherName]),
-                                SpouseName = Convert.ToString(dr[SqlColumnNames.SpouseName]),
+                                SpouseName = Convert.ToString(dr[SqlColumnNames.Spouse_Name]),
                                 MaritialID = Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
+                                //MaritiaStatuslID= Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
                                 AadharNumber = Convert.ToString(dr[SqlColumnNames.AadharNumber]),
                                 PanNumber = Convert.ToString(dr[SqlColumnNames.PanNumber]),
                                 Address = Convert.ToString(dr[SqlColumnNames.Address]),
@@ -206,13 +233,61 @@ namespace FOS.Repository.Implementors
         /// </summary>
         /// <returns>List of <see cref="GetUserTranslanderModel"/></returns>
 
-        public async Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId)
+        //public async Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId)
+        //{
+        //    var userdetails = new GetUserTranslanderModel();
+        //    using (var connection = new SqlConnection(connectionString))
+        //    {
+
+        //        connection.Open();
+        //        var cmd = connection.CreateCommand();
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.CommandText = SqlCommandConstants.FOS_Sysad_Get_UserMaster;
+        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId));
+        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_USER_ID, userId));
+
+        //        var dataAdapter = new SqlDataAdapter(cmd);
+        //        var ds = new DataSet();
+        //        dataAdapter.Fill(ds);
+
+        //        if (ds != null && ds.Tables.Count > 0)
+        //        {
+        //            if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+        //            {
+        //                var dr = ds.Tables[0].Rows[0];
+        //                userdetails = new GetUserTranslanderModel
+
+        //                {
+        //                    UserID = Convert.ToInt32(dr[SqlColumnNames.UserID]),
+        //                    UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+        //                    UserName = Convert.ToString(dr[SqlColumnNames.UserName]),                            
+        //                    MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumberr]),
+        //                    Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
+        //                    Userlevel = Convert.ToString(dr[SqlColumnNames.UserLevel]),                           
+        //                    EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
+                       
+
+
+
+        //                };
+        //            }
+
+               
+        //        }
+        //        return userdetails;
+        //    }
+        //}
+
+
+
+
+        public async Task<List<GetUserTranslanderModel>> getUsertranslander(int? companyId, int? userId)
         {
-            var userdetails = new GetUserTranslanderModel();
+            var userdetailsList = new List<GetUserTranslanderModel>(); // List to store all user details
+
             using (var connection = new SqlConnection(connectionString))
             {
-
-                connection.Open();
+                await connection.OpenAsync(); // Use async for non-blocking call
                 var cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = SqlCommandConstants.FOS_Sysad_Get_UserMaster;
@@ -225,77 +300,29 @@ namespace FOS.Repository.Implementors
 
                 if (ds != null && ds.Tables.Count > 0)
                 {
-                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                    var table = ds.Tables[0]; // Assuming the first table holds the relevant data
+                    foreach (DataRow dr in table.Rows)
                     {
-                        var dr = ds.Tables[0].Rows[0];
-                        userdetails = new GetUserTranslanderModel
-
+                        var userdetails = new GetUserTranslanderModel
                         {
-                            //UserID = Convert.ToInt32(dr[SqlColumnNames.UserID]),
-                            //UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
-                            UserName = Convert.ToString(dr[SqlColumnNames.UserName]),                            
+                            UserID = Convert.ToInt32(dr[SqlColumnNames.UserID]),
+                            UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+                            UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
                             MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumberr]),
                             Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
-                            Userlevel = Convert.ToString(dr[SqlColumnNames.UserLevel]),                           
+                            Userlevel = Convert.ToString(dr[SqlColumnNames.UserLevel]),
                             EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
-                       
-
-
-
                         };
+                        userdetailsList.Add(userdetails); // Add each row to the list
                     }
-
-                    //if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
-                    //{
-                    //    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
-                    //    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
-                    //    if (communicationAddress != null)
-                    //        prospect.CommunicationAddress = new Address
-                    //        {
-                    //            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
-                    //            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
-                    //            City = Convert.ToString(communicationAddress["City"]),
-                    //            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
-                    //            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
-                    //            Pincode = Convert.ToString(communicationAddress["Pincode"]),
-                    //            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
-                    //        };
-                    //    if (permanentAddress != null)
-                    //        prospect.PermanentAddress = new Address
-                    //        {
-                    //            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
-                    //            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
-                    //            City = Convert.ToString(permanentAddress["City"]),
-                    //            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
-                    //            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
-                    //            Pincode = Convert.ToString(permanentAddress["Pincode"]),
-                    //            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
-                    //        };
-
-
-                    //    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
-                    //    {
-                    //        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
-                    //        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
-                    //        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
-                    //        if (aadharDocument != null)
-                    //        {
-                    //            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
-                    //            prospect.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
-                    //        }
-                    //        if (panDocument != null)
-                    //        {
-                    //            prospect.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
-                    //            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
-                    //        }
-                    //        if (prospectDocument != null)
-                    //            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
-                    //    }
-                    //}
                 }
-                return userdetails;
+
+                return userdetailsList; // Return the list of all user details
             }
         }
+
+
+
 
 
         /// <summary>
@@ -331,8 +358,8 @@ namespace FOS.Repository.Implementors
 
 
         public async Task<int> InsertUserDetails(int companyId, int User_ID, string UserCode, string UserName, int? genderId,
-                                           string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, string Designation,
-                                           int UserLevelID, int ReportingNextlevel, int User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
+                                           string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, int? Designation,
+                                           int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
                                           , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
                                            int createdBy, int errorCode)
         {
@@ -344,8 +371,9 @@ namespace FOS.Repository.Implementors
                 try
                 {
                     var parameters = new DynamicParameters();
-                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input); 
-                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_ID, User_ID, DbType.Int32, ParameterDirection.Input); 
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId, DbType.Int32, ParameterDirection.Input);
+                    if (User_ID != 0)
+                        parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_ID, User_ID, DbType.Int32, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_CODE, UserCode, DbType.String, ParameterDirection.Input, 50);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_PASSWORD, Password, DbType.String, ParameterDirection.Input, 50);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_GENDER_ID, genderId, DbType.Int32, ParameterDirection.Input);
