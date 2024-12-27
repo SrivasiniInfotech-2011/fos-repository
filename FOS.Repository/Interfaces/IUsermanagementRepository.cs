@@ -45,6 +45,11 @@ namespace FOS.Repository.Interfaces
         public Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId);
 
 
+        /// <summary>
+        /// GetUserReportingLevel.
+        /// </summary>
+        /// <returns>List of <see cref="ReportingLevel"/></returns>
+        public Task<List<ReportingLevel>>getUserReportingLevel(int? companyId, int? userId,string? prefixText);
 
 
         /// <summary>

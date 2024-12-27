@@ -1,4 +1,5 @@
 ﻿using FOS.Models.Entities;
+using FOS.Models.Requests;
 
 namespace FOS.Repository.Interfaces
 {
@@ -111,5 +112,14 @@ namespace FOS.Repository.Interfaces
         /// </summary>
         /// <returns>List of <see cref="ProspectExportData"/></returns>
         public Task<List<ProspectExportData>> GetProspectDataForExport();
+
+        /// <summary>
+        /// Get the Company Master Details.
+        /// </summary>
+        /// <returns>List of <see cref="Prospect"/></returns>
+        public Task<CompanyMasterRequest> Get_CompanyMasterRepository(int? companyId);
+
     }
+
+
 }
