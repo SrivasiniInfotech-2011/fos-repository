@@ -357,7 +357,9 @@ namespace FOS.Repository.Implementors
         /// <returns>Integer Value Indicating if the record got saved.</returns>
 
 
-        public async Task<int> InsertUserDetails(int companyId, int User_ID, string UserCode, string UserName, int? genderId,
+        public async Task<int> InsertUserDetails(
+            
+            int companyId, int User_ID, string UserCode, string UserName, int? genderId,
                                            string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, int? Designation,
                                            int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
                                           , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
