@@ -2,8 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/FOS.Repository/.vs/FOS.Repository/FileContentIndex
-/FOS.Repository/obj
+/FOS.Repository/.vs
 /FOS.Repository/bin/Debug/net8.0
-/FOS.Repository/.vs/FOS.Repository/v17/.suo
-/FOS.Repository/.vs/FOS.Repository/v17
+/FOS.Repository/bin/Release/net8.0
+/FOS.Repository/obj
+/FOS.Repository/FOS.Repository.sln
