@@ -6,6 +6,7 @@ using FOS.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
 using static FOS.Models.Constants.Constants;
+using static FOS.Models.Constants.SqlCommandConstants;
 
 namespace FOS.Repository.Implementors
 {
@@ -135,6 +136,76 @@ namespace FOS.Repository.Implementors
         }
 
         /// <summary>
+        /// Gets the FVR Details.
+        /// </summary>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="userId">User Id.</param>
+        /// <param name="leadId">Lead Id.</param>
+        /// <param name="personType">Person Type.</param>
+        /// <returns>Instance of type <see cref="FvrDetail"/></returns>
+        public FvrDetail? GetFvrDetails(int? companyId, int? userId, int? leadId,int? personType)
+        {
+            var fvrDetail = new FvrDetail();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = SqlCommandConstants.FOS_ORG_GET_FVRDETAILS;
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.LEAD_ID, leadId));
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PERSON_TYPE, personType));
+                var dataAdapter = new SqlDataAdapter(cmd);
+                var ds = new DataSet();
+                dataAdapter.Fill(ds);
+
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var dr = ds.Tables[0].Rows[0];
+                        fvrDetail.FvrHirerDetail = new FVrHirer
+                        {
+                            FieldVerificationId = Convert.ToInt64(dr["Field_Verification_ID"]),
+                            VisitedBy = Convert.ToString(dr["Verifier_Name"]),
+                            DateVisited = Convert.ToDateTime(dr["Visted_Date"]),
+                            TimeStamp = Convert.ToString(dr["Visited_Time"]),
+                            HouseAccessibility = Convert.ToInt32(dr["AccessibilityHouse_ID"]),
+                            LocalityId = Convert.ToInt32(dr["Locality_ID"]),
+                            LocalityName = Convert.ToString(dr["Locality_Description"]),
+                            HouseType = Convert.ToInt32(dr["HouseType_ID"]),
+                            FlooringType = Convert.ToInt32(dr["FlooringType_ID"]),
+                            RoofingType = Convert.ToInt32(dr["RoofingType_ID"]),
+                            LivingType = Convert.ToInt32(dr["LivingType_ID"]),
+                            EntryPermittedType = Convert.ToInt32(dr["EntryPermitted_ID"]),
+                            HouseArea = Convert.ToString(dr["Size_of_House"]),
+                            LandMark = Convert.ToString(dr["House_landmark"])!,
+                            Recommendation = Convert.ToInt32(dr["Recommented_ID"]),
+                            PoliticalAffiliation = Convert.ToInt32(dr["PoliticalParty_ID"]),
+                            EarlyVisitedType = Convert.ToInt32(dr["EarlyVistited_ID"]),
+                            Remarks = Convert.ToString(dr["Reason"]),
+                            VerifierId = Convert.ToString(dr["Verifier_Code"]),
+                        };
+                    }
+
+                    if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
+                    {
+                        if (fvrDetail.FvrHirerDetail != null)
+                            fvrDetail.FvrHirerDetail.HouseImagePath = Convert.ToString(ds.Tables[1].Rows[0]["Document_Path"]!);
+                    }
+
+                    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
+                    {
+                        if (fvrDetail.FvrHirerDetail != null)
+                            fvrDetail.FvrHirerDetail.Furnitures = Convert.ToString(ds.Tables[2].Rows[0]["HouseHold_Things"]!);
+                    }
+                }
+            }
+            return fvrDetail;
+        }
+
+        /// <summary>
         /// Gets a List of Lookups for Hirer Screen.
         /// </summary>
         /// <param name="companyId">Company Id</param>
@@ -210,7 +281,7 @@ namespace FOS.Repository.Implementors
                     if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
                     {
 
-                        fvrNeighbourHoodDetail.FvrNeighbourHoodDocuments = ds.Tables[0].Rows.Cast<DataRow>()
+                        fvrNeighbourHoodDetail.FvrDocuments = ds.Tables[0].Rows.Cast<DataRow>()
                             .Select(r => new FvrDocument
                             {
                                 FieldVerificationId = Convert.ToInt32(r["Field_Verification_ID"]),

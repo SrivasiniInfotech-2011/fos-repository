@@ -76,5 +76,16 @@ namespace FOS.Repository.Interfaces
         /// <param name="fvrDetail">Fvr Hirer Detail</param>
         /// <returns>Integer value indicating if the data was inserted.</returns>
         Task<int> AddFvrHirerDetail(int? companyId, int? leadId, FvrDetail? fvrDetail);
+
+        /// <summary>
+        /// Gets the FVR Details.
+        /// </summary>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="userId">User Id.</param>
+        /// <param name="leadId">Lead Id.</param>
+        /// <param name="personType">Person Type.</param>
+        /// <returns>Instance of type <see cref="FvrDetail"/></returns>
+        FvrDetail? GetFvrDetails(int? companyId, int? userId, int? leadId, int? personType);
+
     }
 }
