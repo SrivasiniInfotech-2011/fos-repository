@@ -34,7 +34,7 @@ namespace FOS.Repository.Interfaces
         /// Get the User Details.
         /// </summary>
         /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
-        public Task<InsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId);
+        public Task<GetInsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId);
 
 
 
@@ -42,14 +42,14 @@ namespace FOS.Repository.Interfaces
         /// GetUserTranslander.
         /// </summary>
         /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
-        public Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId);
+        public Task<List<GetUserTranslanderModel>> getUsertranslander(int? companyId, int? userId);
 
 
         /// <summary>
         /// GetUserReportingLevel.
         /// </summary>
         /// <returns>List of <see cref="ReportingLevel"/></returns>
-        public Task<List<ReportingLevel>>getUserReportingLevel(int? companyId, int? userId,string? prefixText);
+        public Task<List<ReportingLevel>>getUserReportingLevel(int? companyId, int? userId,string? prefixText, int? lobId, int? locationId);
 
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace FOS.Repository.Interfaces
 
         public Task<int> InsertUserDetails(
                                            int companyId, int User_ID, string UserCode, string UserName,  int? genderId,
-                                           string Password, DateTime? DOJ,  string mobileNumber, string? EmergencycontactNumber, string Designation,
-                                           int UserLevelID, int ReportingNextlevel, int User_Group, string EmailID, DateTime? Dateofbirth,string FatherName,string MotherName
+                                           string Password, DateTime? DOJ,  string mobileNumber, string? EmergencycontactNumber, int? Designation,
+                                           int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth,string FatherName,string MotherName
                                           ,string SpouseName,int Maritial_ID,string Aadhar_Number,string PAN_Number,string Address, string User_Imagepath,int Is_Active,
                                            int createdBy, int errorCode
                                                 );
