@@ -81,7 +81,7 @@ namespace FOS.Repository.Implementors
         /// 
         /// </summary>
         /// <returns>List of <see cref="ReportingLevel"/></returns>
-        public async Task<List<ReportingLevel>> getUserReportingLevel(int? companyId,int? userId,string? prefixText)
+        public async Task<List<ReportingLevel>> getUserReportingLevel(int? companyId,int? userId,string? prefixText, int? lobId, int? locationId)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -91,9 +91,11 @@ namespace FOS.Repository.Implementors
                     {
                         Company_ID = companyId,
                         User_ID = userId,
-                        PrefixText = prefixText
+                        PrefixText = prefixText,
+                        LOB_ID = lobId,
+                    location_ID = locationId
 
-                    });
+                });
                     return lstLookups.ToList();
                 }
                 catch (Exception ex) { throw; }
@@ -139,8 +141,8 @@ namespace FOS.Repository.Implementors
                                 UserID = Convert.ToInt16(dr[SqlColumnNames.UserID]),
                                 UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
                                 UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
-                                //GenderId = Convert.ToString(dr[SqlColumnNames.GenderName]),
-                                GenderName = Convert.ToString(dr[SqlColumnNames.GenderName]),
+                                GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
+                                //GenderName = Convert.ToString(dr[SqlColumnNames.Gender_Id]),
                                 Password = Convert.ToString(dr[SqlColumnNames.Password]),
                                 DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
                                 MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
@@ -173,53 +175,6 @@ namespace FOS.Repository.Implementors
                         }
                     }
 
-                    //if (ds.Tables[1] != null && ds.Tables[1].Rows.Count > 0)
-                    //{
-                    //    var communicationAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 1);
-                    //    var permanentAddress = ds.Tables[1].Rows.Cast<DataRow>().FirstOrDefault(dr => dr.Field<int>("Address_LookupValue_ID") == 2);
-                    //    if (communicationAddress != null)
-                    //        prospect.CommunicationAddress = new Address
-                    //        {
-                    //            AddressLine1 = Convert.ToString(communicationAddress["Address_1"]),
-                    //            AddressLine2 = Convert.ToString(communicationAddress["Address_2"]),
-                    //            City = Convert.ToString(communicationAddress["City"]),
-                    //            CountryId = Convert.ToInt32(communicationAddress["Country_ID"]),
-                    //            Landmark = Convert.ToString(communicationAddress["Address_Landmark"]),
-                    //            Pincode = Convert.ToString(communicationAddress["Pincode"]),
-                    //            StateId = Convert.ToInt32(communicationAddress["State_ID"]),
-                    //        };
-                    //    if (permanentAddress != null)
-                    //        prospect.PermanentAddress = new Address
-                    //        {
-                    //            AddressLine1 = Convert.ToString(permanentAddress["Address_1"]),
-                    //            AddressLine2 = Convert.ToString(permanentAddress["Address_2"]),
-                    //            City = Convert.ToString(permanentAddress["City"]),
-                    //            CountryId = Convert.ToInt32(permanentAddress["Country_ID"]),
-                    //            Landmark = Convert.ToString(permanentAddress["Address_Landmark"]),
-                    //            Pincode = Convert.ToString(permanentAddress["Pincode"]),
-                    //            StateId = Convert.ToInt32(permanentAddress["State_ID"]),
-                    //        };
-
-
-                    //    if (ds.Tables[2] != null && ds.Tables[2].Rows.Count > 0)
-                    //    {
-                    //        var aadharDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 1);
-                    //        var panDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 11);
-                    //        var prospectDocument = ds.Tables[2].Rows.Cast<DataRow>().FirstOrDefault(s => s.Field<int>("ProspectDocument_ID") == 21);
-                    //        if (aadharDocument != null)
-                    //        {
-                    //            prospect.AadharImagePath = Convert.ToString(aadharDocument["Upload_Path"]);
-                    //            prospect.AadharNumber = Convert.ToString(aadharDocument["Document_IdentityValue"]);
-                    //        }
-                    //        if (panDocument != null)
-                    //        {
-                    //            prospect.PanNumber = Convert.ToString(panDocument["Document_IdentityValue"]);
-                    //            prospect.PanNumberImagePath = Convert.ToString(panDocument["Upload_Path"]);
-                    //        }
-                    //        if (prospectDocument != null)
-                    //            prospect.ProspectImagePath = Convert.ToString(prospectDocument["Upload_Path"]);
-                    //    }
-                    //}
                 }
                 return userdetails;
             }
@@ -232,54 +187,6 @@ namespace FOS.Repository.Implementors
         /// GetUserTranslander.
         /// </summary>
         /// <returns>List of <see cref="GetUserTranslanderModel"/></returns>
-
-        //public async Task<GetUserTranslanderModel> getUsertranslander(int? companyId, int? userId)
-        //{
-        //    var userdetails = new GetUserTranslanderModel();
-        //    using (var connection = new SqlConnection(connectionString))
-        //    {
-
-        //        connection.Open();
-        //        var cmd = connection.CreateCommand();
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        cmd.CommandText = SqlCommandConstants.FOS_Sysad_Get_UserMaster;
-        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_COMPANY_ID, companyId));
-        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.USER_MANAGEMENT_USER_ID, userId));
-
-        //        var dataAdapter = new SqlDataAdapter(cmd);
-        //        var ds = new DataSet();
-        //        dataAdapter.Fill(ds);
-
-        //        if (ds != null && ds.Tables.Count > 0)
-        //        {
-        //            if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
-        //            {
-        //                var dr = ds.Tables[0].Rows[0];
-        //                userdetails = new GetUserTranslanderModel
-
-        //                {
-        //                    UserID = Convert.ToInt32(dr[SqlColumnNames.UserID]),
-        //                    UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
-        //                    UserName = Convert.ToString(dr[SqlColumnNames.UserName]),                            
-        //                    MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumberr]),
-        //                    Designation = Convert.ToString(dr[SqlColumnNames.Designation]),
-        //                    Userlevel = Convert.ToString(dr[SqlColumnNames.UserLevel]),                           
-        //                    EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
-                       
-
-
-
-        //                };
-        //            }
-
-               
-        //        }
-        //        return userdetails;
-        //    }
-        //}
-
-
-
 
         public async Task<List<GetUserTranslanderModel>> getUsertranslander(int? companyId, int? userId)
         {
@@ -358,8 +265,7 @@ namespace FOS.Repository.Implementors
 
 
         public async Task<int> InsertUserDetails(
-            
-            int companyId, int User_ID, string UserCode, string UserName, int? genderId,
+                       int companyId, int User_ID, string UserCode, string UserName, int? genderId,
                                            string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, int? Designation,
                                            int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
                                           , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
