@@ -49,7 +49,7 @@ namespace FOS.Repository.Interfaces
         /// GetUserReportingLevel.
         /// </summary>
         /// <returns>List of <see cref="ReportingLevel"/></returns>
-        public Task<List<ReportingLevel>>getUserReportingLevel(int? companyId, int? userId,string? prefixText);
+        public Task<List<ReportingLevel>>getUserReportingLevel(int? companyId, int? userId,string? prefixText, int? lobId, int? locationId);
 
 
         /// <summary>
