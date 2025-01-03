@@ -1,0 +1,16 @@
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\bin\Release\net8.0\FOS.Repository.deps.json
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\bin\Release\net8.0\FOS.Repository.dll
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\bin\Release\net8.0\FOS.Repository.pdb
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\bin\Release\net8.0\FOS.Models.dll
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\bin\Release\net8.0\FOS.Models.pdb
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.csproj.AssemblyReference.cache
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.GeneratedMSBuildEditorConfig.editorconfig
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.AssemblyInfoInputs.cache
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.AssemblyInfo.cs
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.csproj.CoreCompileInputs.cache
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.sourcelink.json
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repo.C19545FA.Up2Date
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.dll
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\refint\FOS.Repository.dll
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\FOS.Repository.pdb
+D:\Fos\fos-prospect-master\fos-repository\FOS.Repository\obj\Release\net8.0\ref\FOS.Repository.dll

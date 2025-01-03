@@ -2,6 +2,7 @@
 using FOS.Models;
 using FOS.Models.Constants;
 using FOS.Models.Entities;
+using FOS.Models.Requests;
 using FOS.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
@@ -35,6 +36,67 @@ namespace FOS.Repository.Implementors
                     IsActive = isActive.GetValueOrDefault()
                 });
                 return lstLocations.ToList();
+            }
+        }
+
+        public async Task<CompanyMasterRequest> Get_CompanyMasterRepository(int? companyId)
+        {
+            var company = new CompanyMasterRequest();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = SqlCommandConstants.FOS_Get_Company_Details;
+                cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+
+                var dataAdapter = new SqlDataAdapter(cmd);
+                var ds = new DataSet();
+                dataAdapter.Fill(ds);
+
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var dr = ds.Tables[0].Rows[0];
+                        company = new CompanyMasterRequest
+                        {
+                            companyId = Convert.ToInt64(dr[SqlColumnNames.CompanyID]),
+                            companyCode = Convert.ToString(dr[SqlColumnNames.CompanyCode]),
+                            companyName = Convert.ToString(dr[SqlColumnNames.CompanyName]),
+                            companyAddress = Convert.ToString(dr[SqlColumnNames.CompanyAddress]),
+                            city = Convert.ToString(dr[SqlColumnNames.City]),
+                            state = Convert.ToString(dr[SqlColumnNames.State]),
+                            country = Convert.ToString(dr[SqlColumnNames.Country]),
+                            zipCode = Convert.ToInt64(dr[SqlColumnNames.ZipCode]),
+                            constitutionalStatusId = Convert.ToInt64(dr[SqlColumnNames.ConstitutionalStatusId]),
+                            cdCeoHeadName = Convert.ToString(dr[SqlColumnNames.CDCEOHeadName]),
+                            cdTelephoneNumber = Convert.ToInt64(dr[SqlColumnNames.CDTelephoneNumber]),
+                            cdMobileNumber = Convert.ToInt64(dr[SqlColumnNames.CDMobileNumber]),
+                            cdEmailId = Convert.ToString(dr[SqlColumnNames.CDEmailID]),
+                            cdWebsite = Convert.ToString(dr[SqlColumnNames.CDWebsite]),
+                            cdSysAdminUserCode = Convert.ToString(dr[SqlColumnNames.CDSysAdminUserCode]),
+                            cdSysAdminUserPassword = Convert.ToString(dr[SqlColumnNames.CDSysAdminUserPassword]),
+                            odCommunicationAddress = Convert.ToString(dr[SqlColumnNames.ODCommunicationAddress]),
+                            odAddress1 = Convert.ToString(dr[SqlColumnNames.ODAddress1]),
+                            odCity = Convert.ToString(dr[SqlColumnNames.ODCity]),
+                            odState = Convert.ToString(dr[SqlColumnNames.ODState]),
+                            odCountry = Convert.ToString(dr[SqlColumnNames.ODCountry]),
+                            odZipCode = Convert.ToInt64(dr[SqlColumnNames.ODZipCode]),
+                            odDateOfIncorporation = Convert.ToDateTime(dr[SqlColumnNames.ODDateOfIncorporation]),
+                            odRegLicNumber = Convert.ToInt64(dr[SqlColumnNames.ODRegLicNumber]),
+                            odValidityOfRegLicNumber = Convert.ToDateTime(dr[SqlColumnNames.ODValidityOfRegLicNumber]),
+                            odIncomeTaxPanNumber = Convert.ToString(dr[SqlColumnNames.ODIncomeTaxPANNumber]),
+                            currency = Convert.ToString(dr[SqlColumnNames.Currency]),
+                            odRemarks = Convert.ToString(dr[SqlColumnNames.ODRemarks]),
+                            active = Convert.ToInt64(dr[SqlColumnNames.Active]),
+                            constitutionalStatus = Convert.ToString(dr[SqlColumnNames.Constitutional_Status])
+                        };
+                    }
+
+
+                }
+                return company;
             }
         }
 
