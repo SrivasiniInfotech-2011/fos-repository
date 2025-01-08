@@ -6,6 +6,7 @@ using FOS.Models.Requests;
 using FOS.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
+using System.Numerics;
 using static FOS.Models.Constants.Constants;
 
 namespace FOS.Repository.Implementors
@@ -82,6 +83,7 @@ namespace FOS.Repository.Implementors
                             odCity = Convert.ToString(dr[SqlColumnNames.ODCity]),
                             odState = Convert.ToString(dr[SqlColumnNames.ODState]),
                             odCountry = Convert.ToString(dr[SqlColumnNames.ODCountry]),
+                            gstNumber = Convert.ToString(dr[SqlColumnNames.GSTNumber]),
                             odZipCode = Convert.ToInt64(dr[SqlColumnNames.ODZipCode]),
                             odDateOfIncorporation = Convert.ToDateTime(dr[SqlColumnNames.ODDateOfIncorporation]),
                             odRegLicNumber = Convert.ToInt64(dr[SqlColumnNames.ODRegLicNumber]),

@@ -7,3 +7,7 @@
 /FOS.Repository/bin/Release/net8.0
 /FOS.Repository/obj
 /FOS.Repository/FOS.Repository.sln
+/FOS.Repository/obj/FOS.Repository.csproj.nuget.dgspec.json
+/FOS.Repository/obj/FOS.Repository.csproj.nuget.g.props
+/FOS.Repository/obj/project.assets.json
+/FOS.Repository/obj/project.nuget.cache
