@@ -108,19 +108,93 @@ namespace FOS.Repository.Implementors
         /// </summary>
         /// <returns>List of <see cref="InsertUserDetailsModel"/></returns>
 
-        public async Task<GetInsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId)
+        //public async Task<GetInsertUserDetailsModel> GetExistingUserDetails(int? companyId, int? userId)
+        //{
+        //    var userdetails = new GetInsertUserDetailsModel();
+        //    using (var connection = new SqlConnection(connectionString))
+        //    {
+
+        //        connection.Open();
+        //        var cmd = connection.CreateCommand();
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.CommandText = SqlCommandConstants.FOS_SYSAD_GET_UserViewDetails;
+        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
+        //        cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
+            
+        //        var dataAdapter = new SqlDataAdapter(cmd);
+        //        var ds = new DataSet();
+        //        dataAdapter.Fill(ds);
+
+        //        if (ds != null && ds.Tables.Count > 0)
+        //        {
+        //            if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
+        //            {
+
+        //                try
+        //                {
+        //                    var dr = ds.Tables[0].Rows[0];
+        //                    userdetails = new GetInsertUserDetailsModel
+
+
+
+        //                    {
+        //                        UserID = Convert.ToInt16(dr[SqlColumnNames.UserID]),
+        //                        UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+        //                        UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
+        //                        GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
+        //                        Password = Convert.ToString(dr[SqlColumnNames.Password]),
+        //                        DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
+        //                        MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
+        //                        EmergencycontactNumber = Convert.ToString(dr[SqlColumnNames.EmergencycontactNumber]),
+        //                        Designation = Convert.ToInt32(dr[SqlColumnNames.Designationid]),
+        //                        UserLevelID = Convert.ToInt32(dr[SqlColumnNames.UserLevelID]),
+        //                        ReportingNextlevel = Convert.ToInt32(dr[SqlColumnNames.ReportingNextlevel]),
+        //                        ReportingGHigherLevel = Convert.ToString(dr[SqlColumnNames.REPORTING_HIGHER_LEVEL]),
+        //                        MarutialStatusDiscription = Convert.ToString(dr[SqlColumnNames.marutialStatusDiscription]),                       
+        //                        UserLevel = Convert.ToString(dr[SqlColumnNames.UserLevelID]),
+        //                        UserGroup= Convert.ToInt32(dr[SqlColumnNames.userGroup]),
+        //                        EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
+        //                        Dateofbirth = Convert.ToDateTime(dr[SqlColumnNames.DoB]),
+        //                         RelivingDate= Convert.ToDateTime(dr[SqlColumnNames.relivingDate]),
+        //                        FatherName = Convert.ToString(dr[SqlColumnNames.FatherName]),
+        //                        MotherName = Convert.ToString(dr[SqlColumnNames.MotherName]),
+        //                        SpouseName = Convert.ToString(dr[SqlColumnNames.Spouse_Name]),
+        //                        MaritialID = Convert.ToInt32(dr[SqlColumnNames.MaritialID]),                         
+        //                        AadharNumber = Convert.ToString(dr[SqlColumnNames.AadharNumber]),
+        //                        PanNumber = Convert.ToString(dr[SqlColumnNames.PanNumber]),
+        //                        Address = Convert.ToString(dr[SqlColumnNames.Address]),
+        //                        IsActive = Convert.ToInt32(dr[SqlColumnNames.IsActive]),
+        //                        UserImagepath = Convert.ToString(dr[SqlColumnNames.UserImagepath])
+
+
+
+        //                    };
+        //                }
+        //                catch ( Exception ex)
+        //                {
+        //                    throw;
+        //                }
+        //            }
+
+        //        }
+        //        return userdetails;
+        //    }
+        //}
+
+
+        public async Task<List<GetInsertUserDetailsModel>> GetExistingUserDetails(int? companyId, int? userId)
         {
-            var userdetails = new GetInsertUserDetailsModel();
+            var userdetailsList = new List<GetInsertUserDetailsModel>();  // List to store all the user details
+
             using (var connection = new SqlConnection(connectionString))
             {
-
                 connection.Open();
                 var cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = SqlCommandConstants.FOS_SYSAD_GET_UserViewDetails;
                 cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_COMPANY_ID, companyId));
                 cmd.Parameters.Add(new SqlParameter(SqlParameterConstants.PROSPECT_USER_ID, userId));
-            
+
                 var dataAdapter = new SqlDataAdapter(cmd);
                 var ds = new DataSet();
                 dataAdapter.Fill(ds);
@@ -129,58 +203,56 @@ namespace FOS.Repository.Implementors
                 {
                     if (ds.Tables[0] != null && ds.Tables[0].Rows.Count > 0)
                     {
-
                         try
                         {
-                            var dr = ds.Tables[0].Rows[0];
-                            userdetails = new GetInsertUserDetailsModel
-
-
-
+                            foreach (DataRow dr in ds.Tables[0].Rows)
                             {
-                                UserID = Convert.ToInt16(dr[SqlColumnNames.UserID]),
-                                UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
-                                UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
-                                GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
-                                //GenderName = Convert.ToString(dr[SqlColumnNames.Gender_Id]),
-                                Password = Convert.ToString(dr[SqlColumnNames.Password]),
-                                DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
-                                MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
-                                EmergencycontactNumber = Convert.ToString(dr[SqlColumnNames.EmergencycontactNumber]),
-                                Designation = Convert.ToInt32(dr[SqlColumnNames.Designationid]),
-                                UserLevelID = Convert.ToInt32(dr[SqlColumnNames.UserLevelID]),
-                                ReportingNextlevel = Convert.ToInt32(dr[SqlColumnNames.ReportingNextlevel]),
-                                ReportingGHigherLevel = Convert.ToString(dr[SqlColumnNames.REPORTING_HIGHER_LEVEL]),
-                                MarutialStatusDiscription = Convert.ToString(dr[SqlColumnNames.marutialStatusDiscription]),                       
-                                UserLevel = Convert.ToString(dr[SqlColumnNames.UserLevelID]),                                                                                      
-                                EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
-                                Dateofbirth = Convert.ToDateTime(dr[SqlColumnNames.DoB]),
-                                FatherName = Convert.ToString(dr[SqlColumnNames.FatherName]),
-                                MotherName = Convert.ToString(dr[SqlColumnNames.MotherName]),
-                                SpouseName = Convert.ToString(dr[SqlColumnNames.Spouse_Name]),
-                                MaritialID = Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
-                                //MaritiaStatuslID= Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
-                                AadharNumber = Convert.ToString(dr[SqlColumnNames.AadharNumber]),
-                                PanNumber = Convert.ToString(dr[SqlColumnNames.PanNumber]),
-                                Address = Convert.ToString(dr[SqlColumnNames.Address]),
-                                UserImagepath = Convert.ToString(dr[SqlColumnNames.UserImagepath])
+                                var userdetails = new GetInsertUserDetailsModel
+                                {
+                                    UserID = Convert.ToInt16(dr[SqlColumnNames.UserID]),
+                                    UserCode = Convert.ToString(dr[SqlColumnNames.UserCode]),
+                                    UserName = Convert.ToString(dr[SqlColumnNames.UserName]),
+                                    GenderId = Convert.ToInt32(dr[SqlColumnNames.Gender_Id]),
+                                    Password = Convert.ToString(dr[SqlColumnNames.Password]),
+                                    DOJ = Convert.ToDateTime(dr[SqlColumnNames.DOJ]),
+                                    MobileNumber = Convert.ToString(dr[SqlColumnNames.MobileNumber]),
+                                    EmergencycontactNumber = Convert.ToString(dr[SqlColumnNames.EmergencycontactNumber]),
+                                    Designation = Convert.ToInt32(dr[SqlColumnNames.Designationid]),
+                                    UserLevelID = Convert.ToInt32(dr[SqlColumnNames.UserLevelID]),
+                                    ReportingNextlevel = Convert.ToInt32(dr[SqlColumnNames.ReportingNextlevel]),
+                                    ReportingGHigherLevel = Convert.ToString(dr[SqlColumnNames.REPORTING_HIGHER_LEVEL]),
+                                    MarutialStatusDiscription = Convert.ToString(dr[SqlColumnNames.marutialStatusDiscription]),
+                                    UserLevel = Convert.ToString(dr[SqlColumnNames.UserLevelID]),
+                                    UserGroup = Convert.ToInt32(dr[SqlColumnNames.userGroup]),
+                                    EmailID = Convert.ToString(dr[SqlColumnNames.Email]),
+                                    Dateofbirth = Convert.ToDateTime(dr[SqlColumnNames.DoB]),
+                                    RelivingDate = Convert.ToDateTime(dr[SqlColumnNames.relivingDate]),
+                                    FatherName = Convert.ToString(dr[SqlColumnNames.FatherName]),
+                                    MotherName = Convert.ToString(dr[SqlColumnNames.MotherName]),
+                                    SpouseName = Convert.ToString(dr[SqlColumnNames.Spouse_Name]),
+                                    MaritialID = Convert.ToInt32(dr[SqlColumnNames.MaritialID]),
+                                    AadharNumber = Convert.ToString(dr[SqlColumnNames.AadharNumber]),
+                                    PanNumber = Convert.ToString(dr[SqlColumnNames.PanNumber]),
+                                    Address = Convert.ToString(dr[SqlColumnNames.Address]),
+                                    IsActive = Convert.ToInt32(dr[SqlColumnNames.IsActive]),
+                                    UserImagepath = Convert.ToString(dr[SqlColumnNames.UserImagepath])
+                                };
 
-
-
-                            };
+                                // Add the user details object to the list
+                                userdetailsList.Add(userdetails);
+                            }
                         }
-                        catch ( Exception ex)
+                        catch (Exception ex)
                         {
+                            // Handle exception (e.g., log it)
                             throw;
                         }
                     }
-
                 }
-                return userdetails;
+
+                return userdetailsList;  // Return the list of all user details
             }
         }
-
-
 
 
         /// <summary>
@@ -267,7 +339,7 @@ namespace FOS.Repository.Implementors
         public async Task<int> InsertUserDetails(
                        int companyId, int User_ID, string UserCode, string UserName, int? genderId,
                                            string Password, DateTime? DOJ, string mobileNumber, string? EmergencycontactNumber, int? Designation,
-                                           int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth, string FatherName, string MotherName
+                                           int UserLevelID, int ReportingNextlevel, int? User_Group, string EmailID, DateTime? Dateofbirth, DateTime? RelivingDate, string FatherName, string MotherName
                                           , string SpouseName, int Maritial_ID, string Aadhar_Number, string PAN_Number, string Address, string User_Imagepath, int Is_Active,
                                            int createdBy, int errorCode)
         {
@@ -288,6 +360,7 @@ namespace FOS.Repository.Implementors
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_USER_NAME, UserName, DbType.String, ParameterDirection.Input, 100);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DOJ, DOJ, DbType.DateTime, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DATEOFBIRTH, Dateofbirth, DbType.DateTime, ParameterDirection.Input);
+                    parameters.Add(SqlParameterConstants.USER_MANAGEMENT_RelivingDate, RelivingDate, DbType.DateTime, ParameterDirection.Input);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_MOBILE_NUMBER, mobileNumber, DbType.String, ParameterDirection.Input, 20);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_EMERGENCY_CONTACT_NUMBER, EmergencycontactNumber, DbType.String, ParameterDirection.Input, 20);
                     parameters.Add(SqlParameterConstants.USER_MANAGEMENT_DESIGNATION, Designation, DbType.String, ParameterDirection.Input, 40);
