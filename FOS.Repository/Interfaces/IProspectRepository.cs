@@ -119,6 +119,12 @@ namespace FOS.Repository.Interfaces
         /// <returns>List of <see cref="Prospect"/></returns>
         public Task<CompanyMasterRequest> Get_CompanyMasterRepository(int? companyId);
 
+        /// <summary>
+        /// Get the Company Master Details.
+        /// </summary>
+        /// <returns>List of <see cref="Prospect"/></returns>
+        public Task<List<GlobalParameterRequest>>Get_GlobalParameterRepository(int? companyId, int? userId);
+
     }
 
 
